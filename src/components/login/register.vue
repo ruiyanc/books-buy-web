@@ -1,7 +1,25 @@
 <template>
   <div class="center">
     <div class="el-header">
-      这是一个顶栏
+      <img src="../../assets/img/book-logo.jpg" style="width: 150px;height: 80px;display: inline" alt="看不到">
+      <div class="center-right">
+        <p>
+          <i class="el-icon-shopping-cart-1">
+            <router-link to="/cart">购物车 | </router-link>
+          </i>
+          <i>
+            <router-link to="/order">我的订单 | </router-link>
+          </i>
+          <i>
+            <router-link to="/info">个人信息 | </router-link>
+          </i>
+          <i>帮助</i>
+        </p>
+        <p style="float: right">欢迎光临，
+          <router-link to="/login" style="color: #1a66b3">请登录 </router-link>
+          <router-link to="/index" style="color: #1a66b3"> 注册</router-link>
+        </p>
+      </div>
       <hr style="border: 2px solid orange"/>
     </div>
     <div class="el-main">
@@ -9,6 +27,9 @@
         <div slot="header" class="clearfix">
           <span style="font-size: 16px">新用户注册</span>
 <!--          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+          <span style="float: right;font-size: 13px">
+            <router-link to="/index" style="color: #646464">返回首页</router-link>
+          </span>
         </div>
         <div class="register">
           <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -29,10 +50,10 @@
             </el-form-item>
             <el-form-item label="验证码" prop="code">
 <!--              <el-input v-model="ruleForm.code"></el-input>-->
-              <Sms style="border: 1px" v-model="ruleForm.code"></Sms>
+              <Sms v-model="ruleForm.code"></Sms>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
               <el-button @click="resetForm('ruleForm')">重置</el-button>
             </el-form-item>
           </el-form>
@@ -98,11 +119,22 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+  @import "../common/stylus/common.styl"
   .center
     /*text-align center*/
     margin auto 14%
     background-color white
     border 1px solid wheat
+    padding 0
+  .center-right
+    display: inline
+    float: right
+    font-size: 12px
   .register
     margin auto 25%
+  a
+    color #646464
+  i
+    padding 1px 3px
+    font-family '宋体'
 </style>

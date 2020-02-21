@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import login from '../components/login/login'
-import books from '../views/Books'
 import register from '../components/login/register'
 
 Vue.use(VueRouter)
@@ -24,9 +23,9 @@ const routes = [
     component: register
   },
   {
-    path: '/books',
-    name: books,
-    component: books
+    path: '/index',
+    name: 'index',
+    component: () => import('../components/index/index')
   },
   {
     path: '/header',
