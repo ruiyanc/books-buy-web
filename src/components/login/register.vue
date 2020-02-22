@@ -70,6 +70,7 @@ export default {
   components: {
     Sms
   },
+  name: 'register',
   data () {
     return {
       ruleForm: {
