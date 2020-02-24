@@ -125,7 +125,7 @@ export default {
     /*text-align center*/
     margin auto 14%
     background-color white
-    border 1px solid wheat
+    /*border 1px solid wheat*/
     padding 0
   .center-right
     display: inline
