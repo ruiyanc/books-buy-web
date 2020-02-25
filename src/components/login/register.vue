@@ -13,7 +13,9 @@
           <i>
             <router-link to="/info">个人信息 | </router-link>
           </i>
-          <i>帮助</i>
+          <i>
+            <router-link to="">帮助</router-link>
+          </i>
         </p>
         <p style="float: right">欢迎光临，
           <router-link to="/login" style="color: #1a66b3">请登录 </router-link>

@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <el-header>
-      <img src="../../assets/img/book-logo.jpg" style="margin-left: 30px; width: 150px;height: 80px" alt="看不到">
+      <img src="../../assets/img/book.jpg" style="margin-left: 30px; width: 150px;height: 100px" alt="看不到">
       <span style="float: right;margin: 30px 80px auto auto; font-size: 14px">
         <router-link to="/index" style="color: #646464">返回首页</router-link>
       </span>
@@ -19,7 +19,8 @@
                 </el-input>
               </el-form-item>
               <el-form-item prop="password">
-                <el-input type="password" v-model="loginForm.password" placeholder="请输入密码">
+                <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"
+                          @keyup.enter.native="submitForm('loginForm')">
                   <i slot="prefix" class="el-icon-lock"></i>
                 </el-input>
               </el-form-item>
