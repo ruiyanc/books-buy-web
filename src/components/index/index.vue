@@ -17,23 +17,6 @@
           </el-row>
         </div>
         <div class="center-right">
-<!--          <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">-->
-<!--            <el-menu-item index="1">-->
-<!--              欢迎光临，请-->
-<!--              <router-link to="/login" style="color: red">登录</router-link> |-->
-<!--            </el-menu-item>-->
-<!--            <el-submenu index="2">-->
-<!--              <template slot="title">-->
-<!--              </template>-->
-<!--              <el-menu-item index="2-1">选项1</el-menu-item>-->
-<!--              <el-menu-item index="2-2">选项2</el-menu-item>-->
-<!--              <el-menu-item index="2-3">选项3</el-menu-item>-->
-<!--            </el-submenu>-->
-<!--            <el-menu-item index="3">消息中心</el-menu-item>-->
-<!--            <el-menu-item index="4">-->
-<!--              <a href="https://www.ele.me" target="_blank">订单管理</a>-->
-<!--            </el-menu-item>-->
-<!--          </el-menu>-->
           <p style="display: inline">
             <i>欢迎光临，请
               <router-link to="/login" style="color: red">登录</router-link> |
@@ -56,44 +39,77 @@
           </p>
         </div>
       </div>
-      <!--      <hr/>-->
     </div>
-    <div class="el-header">
       <div class="center">
-        <el-container>
-          <el-container>
-            <el-aside width="200px" style="border: 1px solid red">
-              <img src="../../assets/img/book.jpeg" width="100%" height="100px" alt="看不到">
+        <el-container style="border: 1px solid blue;margin: 0">
+          <el-container style="margin: 0">
+            <el-aside width="200px" style="border: 1px solid red;margin: 0">
+              <img src="../../assets/img/b2.jpg" width="100%" height="100px" alt="看不到">
               <div style="background-color: red;color: #f9f9f9;padding: 6px 20px 10px;font: 14px 'Microsoft YaHei'">
-                <router-link to="" style="color:white;">
+                <router-link to="" style="color:white;margin: 0">
                   全部商品分类<i class="el-icon-arrow-down" style="padding-left: 20px"></i>
                 </router-link>
               </div>
             </el-aside>
-            <el-container>
-              <el-main>
-
-                <div style="text-align: center">
-                  <el-input style="width: 400px" placeholder="请输入内容" v-model="input">
-                    <el-select style="width: 120px;" v-model="select" slot="append" placeholder="全部分类">
-                      <el-option label="餐厅" value="1"></el-option>
-                      <el-option label="订单" value="2"></el-option>
-                      <el-option label="用户" value="3"></el-option>
+            <el-container style="margin: 0">
+                <div style="text-align: center;border: 1px solid red;padding-top: 5px">
+                  <el-input style="width: 400px;border-radius: 0" placeholder="请输入内容" v-model="input">
+                    <el-select style="width: 105px;border-radius: 0" v-model="select" slot="append" placeholder="全部分类">
+                      <el-option label="电子书" value="1"></el-option>
+                      <el-option label="图书" value="2"></el-option>
+                      <el-option label="儿童读物" value="3"></el-option>
+                      <el-option label="男人最爱" value="4"></el-option>
+                      <el-option label="女人最爱" value="5"></el-option>
                     </el-select>
                   </el-input>
-                  <el-button slot="append" icon="el-icon-search"></el-button>
+                  <el-button slot="append" type="danger" icon="el-icon-search" style="border-radius: 0"></el-button>
+                  <p style="font-size: 14px">
+                    <i><el-link disabled>热搜：</el-link></i>
+                    <i><el-link>我要去故宫</el-link></i>
+                    <i><el-link>狼图腾</el-link></i>
+                    <i><el-link>十万个为什么</el-link></i>
+                    <i><el-link>学生必看</el-link></i>
+                    <i><el-link>一元秒杀</el-link></i>
+                    <i><el-link>高级搜索</el-link></i>
+                  </p>
                 </div>
-              </el-main>
+              <el-footer style="border: 1px solid #000000" height="47px">
+                <div style="font: 14px 'Microsoft YaHei';padding: 15px">
+                  <el-row>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>图书</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>电子书</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>网络文学</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>学生必看</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>热销书籍</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>男人最爱</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>女人最爱</b></router-link>
+                    </div></el-col>
+                    <el-col :span="3"><div class="grid-content bg-purple">
+                      <router-link to="" ><b>儿童刊物</b></router-link>
+                    </div></el-col>
+                  </el-row>
+                </div>
+              </el-footer>
             </el-container>
-            <el-aside width="250px" style="border: 1px solid red">
-              <div style="text-align: center">
-                <el-button type="danger" style="margin: 0">
-                  <i class="el-icon-shopping-cart-2"></i>
-                  <router-link to="/cart">
-                    购物车
-                  </router-link>
+            <el-aside width="260px" style="border: 1px solid red;margin: 0">
+              <div style="text-align: center;margin: 0;padding-top: 5px">
+                <el-button type="danger" icon="el-icon-shopping-cart-2" style="margin: auto 0;width: 120px;height: 40px;border-radius: 0;">
+                  <router-link to="/cart">购物车</router-link>
                 </el-button>
-                <el-button type="danger" plain style="margin: 0">
+                <el-button plain style="margin-left: 0;width: 92px;height: 40px;border-radius: 0">
                   <router-link to="/order">我的订单</router-link>
                 </el-button>
               </div>
@@ -101,7 +117,7 @@
           </el-container>
         </el-container>
       </div>
-    </div>
+    <hr style="border: 1px solid red;margin: 0"/>
 <!--    <div class="center">-->
 <!--      <div class="el-main">-->
 <!--        <el-card class="box-card">-->
@@ -208,7 +224,8 @@ export default {
 <style scoped lang="stylus">
   @import "../common/stylus/common.styl"
   .center
-    margin 5px 4%
+    margin 0 4%
+    padding 5px
   .address
     margin 5px 0
     display inline
@@ -218,6 +235,7 @@ export default {
     width 100px
   #address
     margin-top 8px
+    padding 5px
     display none
     border 1px solid whitesmoke
     width 330px
@@ -230,4 +248,9 @@ export default {
     font-size: 13px
   i
     padding 2px 5px
+  /*.col*/
+    /*margin: 0*/
+    /*border: 1px solid red*/
+    /*padding: 12px*/
+
 </style>
