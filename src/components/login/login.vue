@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <el-header>
-      <img src="../../assets/img/b2.jpg" style="margin-left: 30px; width: 150px;height: 100px" alt="看不到">
+      <img src="@/assets/img/b2.jpg" style="margin-left: 30px; width: 150px;height: 100px" alt="看不到">
       <span style="float: right;margin: 30px 80px auto auto; font-size: 14px">
         <router-link to="/index" style="color: #646464">返回首页</router-link>
       </span>

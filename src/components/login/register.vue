@@ -1,7 +1,7 @@
 <template>
   <div class="center">
     <div class="el-header">
-      <img src="../../assets/img/b2.jpg" style="width: 150px;height: 80px;display: inline" alt="看不到">
+      <img src="@/assets/img/b2.jpg" style="width: 150px;height: 80px;display: inline" alt="看不到">
       <div class="center-right">
         <p>
           <i class="el-icon-shopping-cart-1">

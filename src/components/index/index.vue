@@ -41,9 +41,9 @@
       </div>
     </div>
       <div class="center">
-        <el-container style="border: 1px solid blue;margin: 0">
-          <el-container style="margin: 0">
-            <el-aside width="200px" style="border: 1px solid red;margin: 0">
+        <el-container>
+          <el-container>
+            <el-aside width="200px">
               <img src="../../assets/img/b2.jpg" width="100%" height="100px" alt="看不到">
               <div style="background-color: red;color: #f9f9f9;padding: 6px 20px 10px;font: 14px 'Microsoft YaHei'">
                 <router-link to="" style="color:white;margin: 0">
@@ -51,8 +51,8 @@
                 </router-link>
               </div>
             </el-aside>
-            <el-container style="margin: 0">
-                <div style="text-align: center;border: 1px solid red;padding-top: 5px">
+            <el-container>
+                <div style="text-align: center;padding-top: 6px">
                   <el-input style="width: 400px;border-radius: 0" placeholder="请输入内容" v-model="input">
                     <el-select style="width: 105px;border-radius: 0" v-model="select" slot="append" placeholder="全部分类">
                       <el-option label="电子书" value="1"></el-option>
@@ -73,7 +73,7 @@
                     <i><el-link>高级搜索</el-link></i>
                   </p>
                 </div>
-              <el-footer style="border: 1px solid #000000" height="47px">
+              <el-footer height="46px">
                 <div style="font: 14px 'Microsoft YaHei';padding: 15px">
                   <el-row>
                     <el-col :span="3"><div class="grid-content bg-purple">
@@ -104,12 +104,12 @@
                 </div>
               </el-footer>
             </el-container>
-            <el-aside width="260px" style="border: 1px solid red;margin: 0">
-              <div style="text-align: center;margin: 0;padding-top: 5px">
-                <el-button type="danger" icon="el-icon-shopping-cart-2" style="margin: auto 0;width: 120px;height: 40px;border-radius: 0;">
+            <el-aside width="260px" >
+              <div class="header-right" >
+                <el-button type="danger" class="cart" icon="el-icon-shopping-cart-2">
                   <router-link to="/cart">购物车</router-link>
                 </el-button>
-                <el-button plain style="margin-left: 0;width: 92px;height: 40px;border-radius: 0">
+                <el-button plain class="order">
                   <router-link to="/order">我的订单</router-link>
                 </el-button>
               </div>
@@ -117,7 +117,39 @@
           </el-container>
         </el-container>
       </div>
-    <hr style="border: 1px solid red;margin: 0"/>
+    <hr style="border: 1px solid red;padding: 0;margin: 0"/>
+    <div class="center">
+      <el-container>
+        <el-aside width="200px" style="border: 1px solid blueviolet">
+          <div class="ul-left">
+            <el-tabs type="border-card" tab-position="left" style="width: 80%;position: fixed;z-index: 99">
+              <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+              <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+              <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+              <el-tab-pane label="定时任务">定时任务</el-tab-pane>
+              <el-tab-pane label="定时任务">定时任务</el-tab-pane>
+              <el-tab-pane label="定时任务">定时任务</el-tab-pane>
+              <el-tab-pane label="定时任务">定时任务</el-tab-pane>
+              <el-tab-pane label="最后一个">定时任务</el-tab-pane>
+            </el-tabs>
+          </div>
+        </el-aside>
+        <el-main style="margin: 0;padding: 0">
+          <el-carousel :interval="4000" arrow="always">
+            <el-carousel-item v-for="(item, index) in images" :key="item.index">
+              <h3>
+                <el-image
+                  style="width: 100%; height: 330px"
+                  :src="item.imgUrl"
+                  :fit="index">
+                </el-image>
+              </h3>
+            </el-carousel-item>
+          </el-carousel>
+        </el-main>
+        <el-aside width="236px" style="border: 1px solid blue">Aside</el-aside>
+      </el-container>
+    </div>
 <!--    <div class="center">-->
 <!--      <div class="el-main">-->
 <!--        <el-card class="box-card">-->
@@ -142,6 +174,14 @@ export default {
       seen: false,
       input: '',
       select: '',
+      images: [
+        { imgUrl: require('@/assets/img/center-1.jpg') },
+        { imgUrl: require('@/assets/img/center-2.jpg') },
+        { imgUrl: require('@/assets/img/center-3.jpg') },
+        { imgUrl: require('@/assets/img/center-4.jpg') },
+        { imgUrl: require('@/assets/img/center-5.jpg') },
+        { imgUrl: require('@/assets/img/center-6.jpg') }
+      ],
       addresses: [
         [
           { value: '武汉' },
@@ -217,6 +257,8 @@ export default {
       let result = this.$refs.result
       result.innerText = value
     }
+  },
+  created () {
   }
 }
 </script>
@@ -225,7 +267,7 @@ export default {
   @import "../common/stylus/common.styl"
   .center
     margin 0 4%
-    padding 5px
+    padding 0
   .address
     margin 5px 0
     display inline
@@ -248,9 +290,41 @@ export default {
     font-size: 13px
   i
     padding 2px 5px
-  /*.col*/
-    /*margin: 0*/
-    /*border: 1px solid red*/
-    /*padding: 12px*/
-
+  .header-right
+    text-align center
+    margin 0
+    padding-top 7px
+  .header-right .cart
+    margin: auto 0;
+    width: 120px;
+    height: 40px;
+    border-radius: 0
+  .header-right .order
+    margin-left: 0;
+    width: 92px;
+    height: 40px;
+    border-radius: 0
+  .el-carousel__item h3
+    color: #475669
+    font-size: 18px
+    opacity: 0.75
+    line-height: 300px
+    margin: 0
+    padding 0
+  .el-carousel__item:nth-child(2n)
+    background-color: #99a9bf
+  .el-carousel__item:nth-child(2n+1)
+    background-color: #d3dce6
+  .ul-left
+    margin 0
+    padding 0
+  /*.ul-left>>>.el-tabs__header.is-left*/
+    /*border 1px solid red*/
+    /*width 196px*/
+  .ul-left>>>.el-tabs__nav-scroll
+    border 1px solid blue
+    width 190px
+  .ul-left>>>.el-tabs__item.is-left
+    border 1px solid red
+    text-align center
 </style>
