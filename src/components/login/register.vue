@@ -51,8 +51,9 @@
               <el-input v-model="ruleForm.address"></el-input>
             </el-form-item>
             <el-form-item label="验证码" prop="code">
-<!--              <el-input v-model="ruleForm.code"></el-input>-->
-              <Sms v-model="ruleForm.code"></Sms>
+              <el-input style="width: 50%;" v-model="ruleForm.code"></el-input>
+<!--              <Sms v-model="ruleForm.code"></Sms>-->
+              <el-button style="width: 50%;" @click="sendMsg" type="primary" :disabled="isDisabled">{{buttonName}}</el-button>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
@@ -69,12 +70,15 @@
 // eslint-disable-next-line no-unused-vars
 import Sms from 'ofcold-security-code'
 export default {
-  components: {
-    Sms
-  },
+  // components: {
+  //   Sms
+  // },
   name: 'register',
   data () {
     return {
+      buttonName: '发送短信',
+      isDisabled: false,
+      time: 60,
       ruleForm: {
         code: '',
         phone: '',
@@ -104,6 +108,20 @@ export default {
     }
   },
   methods: {
+    sendMsg () {
+      let me = this
+      me.isDisabled = true
+      let interval = window.setInterval(function () {
+        me.buttonName = '（' + me.time + '秒）后重新发送'
+        --me.time
+        if (me.time < 0) {
+          me.buttonName = '重新发送'
+          me.time = 60
+          me.isDisabled = false
+          window.clearInterval(interval)
+        }
+      }, 1000)
+    },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
