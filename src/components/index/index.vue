@@ -164,25 +164,25 @@
             <!--              <el-tab-pane label="最后一个">定时任务</el-tab-pane>-->
             <!--            </el-tabs>-->
             <ul>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">图书</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">童书</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">教育</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">电子书</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">网络文学</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">小说</el-link>
               </li>
-              <li @mouseenter="getText(this)">
+              <li>
                 <el-link :underline="false">文艺</el-link>
               </li>
             </ul>
@@ -215,7 +215,7 @@
     </div>
     <!--    <hr style="color: #99a9bf"/>-->
     <div style="margin-top: 50px">
-      <div class="center" @mouseover="timer($event)">
+      <div class="center">
         <div class="spike">
           秒杀<i class="el-icon-alarm-clock"></i>
           倒计时：<span id="countdown">{{count}}</span>秒
@@ -270,7 +270,7 @@
             </el-row>
           </el-aside>
           <el-main style="border: 1px solid red;margin: 0;padding: 0">
-            <el-tabs type="border-card" style="">
+            <el-tabs type="border-card">
               <el-tab-pane label="最新上架">
                 <el-row>
                   <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
@@ -288,7 +288,7 @@
                         <span>好吃的汉堡</span>
                         <div class="bottom clearfix">
                           <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}</span>
+                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
                           <s>{{55}}</s>
                         </div>
                       </div>
@@ -313,7 +313,7 @@
                         <span>好吃的汉堡</span>
                         <div class="bottom clearfix">
                           <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}</span>
+                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
                           <s>{{55}}</s>
                         </div>
                       </div>
@@ -338,7 +338,7 @@
                         <span>好吃的汉堡</span>
                         <div class="bottom clearfix">
                           <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}</span>
+                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
                           <s>{{55}}</s>
                         </div>
                       </div>
@@ -363,7 +363,7 @@
                         <span>好吃的汉堡</span>
                         <div class="bottom clearfix">
                           <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}</span>
+                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
                           <s>{{55}}</s>
                         </div>
                       </div>
@@ -373,29 +373,92 @@
               </el-tab-pane>
             </el-tabs>
           </el-main>
-          <el-aside width="220px">
-            <div>
-              <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                  <span><el-link>图书畅销榜</el-link></span>
-                  <!--                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                </div>
-                <ul>
-                  <li v-for="(data, index) in dataTops" :key="data" class="text item">
-                    <!--                  {{'列表内容 ' + o }}-->
-                    <!--                  <el-image :src="data."></el-image>-->
-                    <i>{{index + 1}}</i>
-                    <i>{{data.title}}</i>
-                    <p>{{data.info}}</p>
-                    <hr style="margin: 0;color: #99a9bf"/>
-                  </li>
-                </ul>
-              </el-card>
+          <el-aside width="220px" style="border: 1px solid yellow">
+            <div class="main-right">
+              <el-tabs>
+                <el-tab-pane label="图书畅销榜">
+                  <el-card class="box-card">
+                    <!--                    <div slot="header" class="clearfix">-->
+                    <!--                      <span><el-link>图书畅销榜</el-link></span>-->
+                    <!--                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                    <!--                    </div>-->
+                    <ul>
+                      <li v-for="(data, index) in dataTops" :key="data" class="text item">
+                        <!--                  {{'列表内容 ' + o }}-->
+                        <!--                  <el-image :src="data."></el-image>-->
+                        <i>{{index + 1}}</i>
+                        <i>{{data.title}}</i>
+                        <p>{{data.info}}</p>
+                        <hr style="margin: 0;color: #99a9bf"/>
+                      </li>
+                    </ul>
+                  </el-card>
+                </el-tab-pane>
+                <el-tab-pane label="图书新品榜">
+                  <el-card class="box-card">
+                    <!--                    <div slot="header" class="clearfix">-->
+                    <!--                      <span><el-link>图书畅销榜</el-link></span>-->
+                    <!--                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                    <!--                    </div>-->
+                    <ul>
+                      <li v-for="(data, index) in dataNews" :key="data" class="text item">
+                        <!--                  {{'列表内容 ' + o }}-->
+                        <!--                  <el-image :src="data."></el-image>-->
+                        <i>{{index + 1}}</i>
+                        <i>{{data.title}}</i>
+                        <p>{{data.info}}</p>
+                        <hr style="margin: 0;color: #99a9bf"/>
+                      </li>
+                    </ul>
+                  </el-card>
+                </el-tab-pane>
+              </el-tabs>
+              <!--              <el-card class="box-card">-->
+              <!--                <div slot="header" class="clearfix">-->
+              <!--                  <span><el-link>图书畅销榜</el-link></span>-->
+              <!--                  &lt;!&ndash;                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>&ndash;&gt;-->
+              <!--                </div>-->
+              <!--                <ul>-->
+              <!--                  <li v-for="(data, index) in dataTops" :key="data" class="text item">-->
+              <!--                    &lt;!&ndash;                  {{'列表内容 ' + o }}&ndash;&gt;-->
+              <!--                    &lt;!&ndash;                  <el-image :src="data."></el-image>&ndash;&gt;-->
+              <!--                    <i>{{index + 1}}</i>-->
+              <!--                    <i>{{data.title}}</i>-->
+              <!--                    <p>{{data.info}}</p>-->
+              <!--                    <hr style="margin: 0;color: #99a9bf"/>-->
+              <!--                  </li>-->
+              <!--                </ul>-->
+              <!--              </el-card>-->
 
             </div>
           </el-aside>
         </el-container>
       </div>
+    </div>
+    <div class="sidebar">
+      <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
+               :collapse="true" router="router">
+        <el-menu-item index="1" route="/cart">
+          <i class="el-icon-shopping-cart-full"></i>
+          <span slot="title">购物车</span>
+        </el-menu-item>
+        <el-menu-item index="2" route="/login">
+          <i class="el-icon-star-off"></i>
+          <span slot="title">收藏夹</span>
+        </el-menu-item>
+        <el-menu-item index="3" route="/index">
+          <i class="el-icon-place"></i>
+          <span slot="title">我的足迹</span>
+        </el-menu-item>
+        <el-menu-item index="4" route="/index">
+          <i class="el-icon-share"></i>
+          <span slot="title">分享</span>
+        </el-menu-item>
+        <el-menu-item index="5" route="/index">
+          <i class="el-icon-s-home"></i>
+          <span slot="title">回到顶部</span>
+        </el-menu-item>
+      </el-menu>
     </div>
   </div>
 </template>
@@ -416,6 +479,10 @@ export default {
         { title: '爱与和平', info: '讲述.....' },
         { title: '西游记', info: '讲述.....' },
         { title: '水浒传', info: '讲述.....' }
+      ],
+      dataNews: [
+        { title: '天才在左,疯子在右', info: '讲述疯子....' },
+        { title: '童话镇', info: '讲述童话....' }
       ],
       images: [
         { imgUrl: require('@/assets/img/center-1.jpg') },
@@ -480,9 +547,6 @@ export default {
     }
   },
   methods: {
-    handleChange (value) {
-      console.log(value)
-    },
     getText (event) {
       let center = document.getElementById('center')
       center.style.backgroundColor = 'red'
@@ -526,7 +590,9 @@ export default {
     }
   },
   created () {
-    // this.timer()
+    window.onload = () => {
+      this.timer()
+    }
   }
 }
 </script>
@@ -616,17 +682,17 @@ export default {
     margin 1px 6px
     padding 2px 8px
 
-  .ul-left >>> .el-tabs.el-tabs--left.el-tabs--border-card
-    /*visibility hidden*/
-  .ul-left >>> .el-tabs__nav-scroll
-    border 1px solid blue
-    width 190px
+  /*.ul-left >>> .el-tabs.el-tabs--left.el-tabs--border-card*/
+  /*visibility hidden*/
+  /*.ul-left >>> .el-tabs__nav-scroll*/
+  /*border 1px solid blue*/
+  /*width 190px*/
 
-  .ul-left >>> .el-tabs__item.is-left
-    text-align center
+  /*.ul-left >>> .el-tabs__item.is-left*/
+  /*text-align center*/
 
-  .ul-left >>> .el-tabs__item.is-left.is-active
-    border 2px solid red
+  /*.ul-left >>> .el-tabs__item.is-left.is-active*/
+  /*border 2px solid red*/
 
   .bottom {
     margin-top: 13px;
@@ -660,4 +726,20 @@ export default {
 
   .spike span
     padding 0 35px
+
+  .main-right >>> .el-tabs__item.is-top
+    padding 0 18px
+
+  .sidebar
+    position: fixed
+    right: 0
+    top: 100px
+
+  .sidebar >>> .menu
+    width 40px
+
+  .sidebar >>> .el-menu-item .el-tooltip
+    padding 0
+    width 30px
+    height 30px
 </style>
