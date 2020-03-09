@@ -238,7 +238,7 @@
                 <span>好吃的汉堡</span>
                 <div class="bottom clearfix">
                   <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                  <span style="color: red;font-size: 16px">{{22}}</span>
+                  <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
                   <s>{{55}}</s>
                 </div>
               </div>
@@ -247,10 +247,10 @@
         </el-row>
       </div>
     </div>
-    <div style="margin-top: 15px;border: 1px solid red">
+    <div style="margin-top: 15px">
       <div class="center">
         <el-container>
-          <el-aside width="200px" style="border: 1px solid yellow">
+          <el-aside width="200px">
             <p style="font-size: 16px;margin: 6px 0">
               <i>
                 <router-link to="">图书</router-link>
@@ -269,7 +269,7 @@
               </el-col>
             </el-row>
           </el-aside>
-          <el-main style="border: 1px solid red;margin: 0;padding: 0">
+          <el-main style="margin: 0;padding: 0">
             <el-tabs type="border-card">
               <el-tab-pane label="最新上架">
                 <el-row>
@@ -373,7 +373,7 @@
               </el-tab-pane>
             </el-tabs>
           </el-main>
-          <el-aside width="220px" style="border: 1px solid yellow">
+          <el-aside width="220px">
             <div class="main-right">
               <el-tabs>
                 <el-tab-pane label="图书畅销榜">
@@ -435,6 +435,10 @@
         </el-container>
       </div>
     </div>
+    <div>
+      <hr style="border: 1px solid red"/>
+      <img src="@/assets/img/bottom.png" alt="看不清" style="margin: auto 10%">
+    </div>
     <div class="sidebar">
       <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
                :collapse="true" router="router">
@@ -478,6 +482,13 @@ export default {
       dataTops: [
         { title: '爱与和平', info: '讲述.....' },
         { title: '西游记', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
+        { title: '水浒传', info: '讲述.....' },
         { title: '水浒传', info: '讲述.....' }
       ],
       dataNews: [
@@ -742,4 +753,6 @@ export default {
     padding 0
     width 30px
     height 30px
+  .center >>> .el-link--inner:hover
+    color red
 </style>
