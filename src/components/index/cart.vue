@@ -27,12 +27,12 @@
           </div>
         </div>
       </div>
-      <div class="center" style="border: 1px solid red;position: relative;">
+      <div class="center" style="position: relative;">
         <div>
           <img src="@/assets/img/b2.jpg" width="200px" height="100px" alt="看不到">
         </div>
         <div style="width: 65%;position:absolute;top: 30px;left: 300px;">
-          <el-steps :active="1" simple finish-status="success">
+          <el-steps :active="active" simple finish-status="success">
             <el-step title="我的购物车" icon="el-icon-shopping-cart-2"></el-step>
             <el-step title="填写订单" ></el-step>
             <el-step title="完成订单" ></el-step>
@@ -41,41 +41,39 @@
       </div>
       <hr style="border: 2px solid red"/>
       <div class="center">
-        <el-table
-          ref="multipleTable"
-          :data="tableData"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column
-            label="全选"
-            type="selection"
-            width="80">
+        <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+          style="width: 100%" @selection-change="selected">
+          <el-table-column label="全选" type="selection" width="80">
           </el-table-column>
-          <el-table-column
-            label="日期"
-            width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="商品信息"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="单价(元)"
-            width="120">
-          </el-table-column>
-          <el-table-column prop="amount" label="数量" width="200">
-            <template slot-scope="scope">
-              <el-input-number v-model="scope.row.number" :min="1" :max="10"></el-input-number>
+          <el-table-column label="商品名称" width="330" style="text-align: center">
+            <template scope="scope">
+              <div>
+                <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>
+                <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="金额(元)"
+            prop="price"
+            label="单价(元)"
             width="120">
+          </el-table-column>
+          <el-table-column label="数量" width="200">
+            <template scope="scope">
+              <div>
+                <el-input style="width: 135px" v-model="scope.row.number" @change="handleInput(scope.row)">
+                  <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del(scope.row)">
+                  </el-button>
+                  <el-button size="small" icon="el-icon-plus" slot="append" @click="add(scope.row)">
+                  </el-button>
+                </el-input>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="goodTotal" label="金额(元)" width="120">
+<!--            <template scope="scope">-->
+<!--              <p @mouseenter="rowPrice(scope.row)">{{scope.row.goodTotal}}</p>-->
+<!--            </template>-->
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -85,11 +83,31 @@
             <el-button type="text" size="small">
               移入收藏
             </el-button>
-              <el-button @click.native.prevent="deleteRow(scope.$index, tableData)"
+              <el-button @click="handleDelete(scope.$index, tableData)"
                 type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
+        <br>
+        <span style="font-family: Microsoft YaHei;color: red;padding-left: 70%">商品总价：{{moneyTotal}}元</span>
+        <el-button style="float: right;width: 110px;height: 40px;border-radius: 0;" type="danger" @click="submit()">结算</el-button>
+        <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+          <el-form :model="form">
+            <el-form-item label="收货人" label-width="150px">
+              <el-input v-model="form.name" autocomplete="off" style="width: 350px;"></el-input>
+            </el-form-item>
+            <el-form-item label="手机号码" label-width="150px">
+              <el-input v-model="form.phone" autocomplete="off" style="width: 350px;"></el-input>
+            </el-form-item>
+            <el-form-item label="所在地区" label-width="150px">
+              <el-input v-model="form.address" autocomplete="off" style="width: 350px;"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="cancel()">取 消</el-button>
+            <el-button type="primary" @click="formSubmint()">确 定</el-button>
+          </div>
+        </el-dialog>
       </div>
     </div>
 </template>
@@ -99,46 +117,50 @@ export default {
   name: 'cart',
   data: function () {
     return {
+      moneyTotal: 0,
+      active: 0,
       tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        amount: 1,
-        address: '上海市普陀区金沙江路 1518 弄'
+        goods: {
+          img: require('@/assets/img/center-1.jpg'),
+          desc: '小米手环2'
+        },
+        price: 29.5,
+        number: 1,
+        goodTotal: 29.5
       }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        amount: 5,
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        amount: 2,
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        amount: 3,
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        amount: 1,
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        amount: 1,
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        amount: 1,
-        address: '上海市普陀区金沙江路 1518 弄'
+        goods: {
+          img: require('@/assets/img/center-1.jpg'),
+          desc: '小米手环2'
+        },
+        price: 29.5,
+        number: 2,
+        goodTotal: 59
       }],
-      multipleSelection: []
+      multipleSelection: [],
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        phone: '',
+        address: ''
+      }
     }
   },
+  computed: {
+  },
+  mounted () {
+    this.checked()
+  },
   methods: {
+    checked () {
+      this.$nextTick(() => {
+        for (let i = 0; i < this.tableData.length; i++) {
+          this.$refs.multipleTable.toggleRowSelection(this.tableData[i], true)
+        }
+      })
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
     toggleSelection (rows) {
       if (rows) {
         rows.forEach(row => {
@@ -148,11 +170,68 @@ export default {
         this.$refs.multipleTable.clearSelection()
       }
     },
-    handleSelectionChange (val) {
-      this.multipleSelection = val
+    handleDelete (index, row) {
+      this.$confirm('确定删除该商品？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData.splice(index, 1)
+        this.$message({ type: 'success', message: '删除成功!' })
+      }).catch(() => {
+        this.$message({ type: 'info', message: '已取消删除' })
+      })
     },
-    deleteRow (index, rows) {
-      rows.splice(index, 1)
+    handleInput (value) {
+      if (value.number == null || value.number === '') {
+        value.number = 1
+      }
+      value.goodTotal = (value.number * value.price).toFixed(2)
+      // 保留两位小数 //增加商品数量也需要重新计算商品总价
+      this.selected(this.multipleSelection)
+    },
+    add (value) {
+      value.number += 1
+      // this.handleInput(value)
+    },
+    del (delGood) {
+      if (delGood.number > 1) {
+        delGood.number -= 1
+      }
+    },
+    // 返回的参数为选中行对应的对象
+    selected (selection) {
+      this.multipleSelection = selection
+      this.moneyTotal = 0
+      // 此处不支持forEach循环，只能用原始方法了
+      for (let i = 0; i < selection.length; i++) {
+        // 判断返回的值是否是字符串
+        if (typeof selection[i].goodTotal === 'string') {
+          selection[i].goodTotal = parseInt(selection[i].goodTotal)
+        }
+        this.moneyTotal += selection[i].goodTotal
+      }
+    },
+    cancel () {
+      this.active -= 1
+      this.dialogFormVisible = false
+    },
+    submit () {
+      this.active += 1
+      this.dialogFormVisible = true
+    },
+    formSubmint () {
+      this.active += 1
+      this.dialogFormVisible = false
+      // 提交收货人信息到后台
+      // 并提交到待付款订单
+    },
+    created () {
+      window.onload = () => {
+        // this.toggleSelection()
+        // this.timer()
+        // this.rowPrice()
+      }
     }
   }
 }
@@ -175,6 +254,6 @@ export default {
     font-size: 13px
   i
     padding 2px 5px
-  .center>>>.el-step__title.is-success
+  .center>>>.el-step__title.is-process
     color red
 </style>
