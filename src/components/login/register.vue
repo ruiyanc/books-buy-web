@@ -52,7 +52,6 @@
             </el-form-item>
             <el-form-item label="验证码" prop="code">
               <el-input style="width: 50%;" v-model="ruleForm.code"></el-input>
-<!--              <Sms v-model="ruleForm.code"></Sms>-->
               <el-button style="width: 50%;" @click="sendMsg" type="primary" :disabled="isDisabled">{{buttonName}}</el-button>
             </el-form-item>
             <el-form-item>

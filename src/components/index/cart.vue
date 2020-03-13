@@ -224,7 +224,7 @@ export default {
       this.active += 1
       this.dialogFormVisible = false
       // 提交收货人信息到后台
-      // 并提交到待付款订单
+      // 并提交到待付款订单且跳转到订单页面
     },
     created () {
       window.onload = () => {

@@ -22,6 +22,10 @@
               <router-link to="/login" style="color: red">登录</router-link>
               |
             </i>
+<!--            <i>-->
+<!--              Hi,<i><el-link href="/#/info" :underline="false" type="danger">言睿</el-link></i>-->
+<!--              <i><el-link href="">[退出]</el-link></i>-->
+<!--            </i>-->
             <i class="el-icon-shopping-cart-1" style="color: red">
               <router-link to="/cart">购物车 |</router-link>
             </i>
@@ -413,23 +417,6 @@
                   </el-card>
                 </el-tab-pane>
               </el-tabs>
-              <!--              <el-card class="box-card">-->
-              <!--                <div slot="header" class="clearfix">-->
-              <!--                  <span><el-link>图书畅销榜</el-link></span>-->
-              <!--                  &lt;!&ndash;                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>&ndash;&gt;-->
-              <!--                </div>-->
-              <!--                <ul>-->
-              <!--                  <li v-for="(data, index) in dataTops" :key="data" class="text item">-->
-              <!--                    &lt;!&ndash;                  {{'列表内容 ' + o }}&ndash;&gt;-->
-              <!--                    &lt;!&ndash;                  <el-image :src="data."></el-image>&ndash;&gt;-->
-              <!--                    <i>{{index + 1}}</i>-->
-              <!--                    <i>{{data.title}}</i>-->
-              <!--                    <p>{{data.info}}</p>-->
-              <!--                    <hr style="margin: 0;color: #99a9bf"/>-->
-              <!--                  </li>-->
-              <!--                </ul>-->
-              <!--              </el-card>-->
-
             </div>
           </el-aside>
         </el-container>
@@ -558,16 +545,6 @@ export default {
     }
   },
   methods: {
-    getText (event) {
-      let center = document.getElementById('center')
-      center.style.backgroundColor = 'red'
-      let el = event.target
-      console.log(event)
-      console.log(el)
-      // let value = event.currentTarget.innerText
-      // alert(value)
-      // center.innerText = value
-    },
     getAppear () {
       let address = document.getElementById('address')
       address.style.display = 'block'
@@ -610,52 +587,6 @@ export default {
 
 <style scoped lang="stylus">
   @import "../common/stylus/common.styl"
-  .center
-    margin 0 5%
-    padding 0
-
-  .address
-    margin 5px 0
-    display inline
-    font-size 14px
-    padding: 5px
-    /*border 1px solid red*/
-    width 100px
-
-  #address
-    margin-top 5px
-    padding 5px
-    display none
-    border 1px solid whitesmoke
-    width 340px
-    position fixed
-    z-index 99
-
-  /*display none*/
-  .center-right
-    display: inline
-    float: right
-    font-size: 13px
-
-  i
-    padding 2px 5px
-
-  .header-right
-    text-align center
-    margin 0
-    padding-top 10px
-
-  .header-right .cart
-    margin: auto 0;
-    width: 120px;
-    height: 40px;
-    border-radius: 0
-
-  .header-right .order
-    margin-left: 0;
-    width: 92px;
-    height: 40px;
-    border-radius: 0
 
   .el-carousel__item h3
     color: #475669
@@ -674,14 +605,6 @@ export default {
   .ul-left
     margin 0
     padding 0
-
-  ul li
-    list-style none
-
-  ul
-    margin 0
-    padding 0
-
   .ul-left li
     line-height 39px
     text-align center
@@ -692,18 +615,6 @@ export default {
     font-size 14px
     margin 1px 6px
     padding 2px 8px
-
-  /*.ul-left >>> .el-tabs.el-tabs--left.el-tabs--border-card*/
-  /*visibility hidden*/
-  /*.ul-left >>> .el-tabs__nav-scroll*/
-  /*border 1px solid blue*/
-  /*width 190px*/
-
-  /*.ul-left >>> .el-tabs__item.is-left*/
-  /*text-align center*/
-
-  /*.ul-left >>> .el-tabs__item.is-left.is-active*/
-  /*border 2px solid red*/
 
   .bottom {
     margin-top: 13px;
