@@ -19,7 +19,7 @@
         </p>
         <p style="float: right">欢迎光临，
           <router-link to="/login" style="color: #1a66b3">请登录 </router-link>
-          <router-link to="/index" style="color: #1a66b3"> 注册</router-link>
+          <router-link to="/register" style="color: #1a66b3"> 注册</router-link>
         </p>
       </div>
       <hr style="border: 2px solid orange"/>
@@ -125,6 +125,14 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log('submit success!')
+          this.$axios.post('/register', {
+            ruleForm: this.ruleForm
+          }).then(response => {
+            console.log(response)
+            if (response.data.code === 200) {
+              this.$router.replace({ path: '/login' })
+            }
+          })
         } else {
           console.log('error submit!!')
           return false
@@ -142,7 +150,7 @@ export default {
   @import "../common/stylus/common.styl"
   .center
     /*text-align center*/
-    margin auto 14%
+    margin auto 20%
     background-color white
     /*border 1px solid wheat*/
     padding 0

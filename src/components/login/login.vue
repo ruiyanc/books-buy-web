@@ -60,36 +60,23 @@ export default {
   },
   methods: {
     submitForm (formName) {
-      this.$axios.post('/register', {
+      this.$axios.post('/login', {
         phoneOrUsername: this.loginForm.phoneOrUsername,
         password: this.loginForm.password
       }).then(successResponse => {
+        console.log(successResponse)
         if (successResponse.data.code === 200) {
-          this.$router.replace({ path: '/index' })
+          this.$router.push({
+            name: 'index',
+            params: { username: successResponse.data.username }
+          })
+        } else {
+          this.$alert(successResponse.data.message, '提示', {
+            confirmButtonText: '确定'
+          })
         }
       })
-      // .then(resp => {
-      //   if (resp.data.code === 200) {
-      //     var data = resp.data.data
-      //     _this.$store.commit('login', data)
-      //     var path = _this.$route.query.redirect
-      //     _this.$router.replace({path: path === '/' || path === undefined ? '/admin/dashboard' : path})
-      //   } else {
-      //     this.$alert(resp.data.message, '提示', {
-      //       confirmButtonText: '确定'
-      //     })
-      //   }
     }
-    // login () {
-    //   this.$axios.post('/login', {
-    //     phoneOrUsername: this.loginForm.phoneOrUsername,
-    //     password: this.loginForm.password
-    //   }).then(successResponse => {
-    //     if (successResponse.data.code === 200) {
-    //       this.$router.replace({ path: '/' })
-    //     }
-    //   })
-    // }
   }
 }
 </script>
@@ -98,7 +85,7 @@ export default {
   /*@import ‘font-awesome/css/font-awesome.min.css’*/
   @import "../common/stylus/common.styl"
   .center
-    margin auto 4%
+    margin auto 8%
   .center-right
     float right
     width 380px
