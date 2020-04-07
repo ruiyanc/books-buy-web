@@ -448,6 +448,7 @@
         <el-menu-item index="5" route="/index">
           <i class="el-icon-s-home"></i>
           <span slot="title">回到顶部</span>
+<!--          <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>-->
         </el-menu-item>
       </el-menu>
     </div>

@@ -37,6 +37,11 @@ const routes = [
     component: () => import('../components/index/index')
   },
   {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('../components/admin/admin')
+  },
+  {
     path: '/header',
     name: 'header',
     component: () => import('../components/common/header')
