@@ -13,23 +13,25 @@ Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
-Vue.filter('dataFormat', function (value, fmt) {
-  let getDate = new Date(value)
-  let o = {
-    'M+': getDate.getMonth() + 1,
-    'd+': getDate.getDate(),
-    'h+': getDate.getHours(),
-    'm+': getDate.getMinutes(),
-    's+': getDate.getSeconds(),
-    'q+': Math.floor((getDate.getMonth() + 3) / 3),
-    'S': getDate.getMilliseconds()
+Vue.filter('dateFormat', function (value, fmt) {
+  let date = new Date(value)
+  if (typeof (fmt) === 'undefined') {
+    fmt = 'yyyy-MM-dd HH:mm:ss'
   }
   if (/(y+)/.test(fmt)) {
-    fmt = fmt.replace(RegExp.$1, (getDate.getFullYear() + '').substr(4 - RegExp.$1.length))
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+  }
+  let o = {
+    'M+': date.getMonth() + 1,
+    'd+': date.getDate(),
+    'H+': date.getHours(),
+    'm+': date.getMinutes(),
+    's+': date.getSeconds()
   }
   for (let k in o) {
-    if (new RegExp('(' + k + ')').test(fmt)) {
-      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+    if (new RegExp(`(${k})`).test(fmt)) {
+      let str = o[k] + ''
+      fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? str : ('00' + str).substr(str.length))
     }
   }
   return fmt

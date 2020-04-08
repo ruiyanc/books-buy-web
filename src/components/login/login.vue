@@ -66,10 +66,19 @@ export default {
       }).then(successResponse => {
         console.log(successResponse)
         if (successResponse.data.code === 200) {
-          this.$router.push({
-            name: 'index',
-            params: { username: successResponse.data.username }
-          })
+          // 普通用户
+          if (successResponse.data.user.role === '2') {
+            this.$router.push({
+              name: 'index',
+              params: { user: successResponse.data.user }
+            })
+          } else {
+            // 管理员
+            this.$router.push({
+              name: 'admin',
+              params: { user: successResponse.data.user }
+            })
+          }
         } else {
           this.$alert(successResponse.data.message, '提示', {
             confirmButtonText: '确定'

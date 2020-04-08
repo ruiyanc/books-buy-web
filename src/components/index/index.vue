@@ -18,12 +18,12 @@
         </div>
         <div class="center-right">
           <p style="display: inline">
-            <i v-if="!this.$route.params.username">欢迎光临，请
+            <i v-if="!this.$route.params.user">欢迎光临，请
               <router-link to="/login" style="color: red">登录</router-link>
               |
             </i>
-            <i v-if="this.$route.params.username">
-              <i>Hi，<el-link href="/#/info" :underline="false" type="danger" v-text="this.$route.params.username"></el-link></i>
+            <i v-if="this.$route.params.user">
+              <i>Hi，<el-link href="/#/info" :underline="false" type="danger" v-text="this.$route.params.user.username"></el-link></i>
               <i><el-link href="">[退出]</el-link></i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
@@ -568,7 +568,7 @@ export default {
       let countdown = document.getElementById('countdown')
       let me = this
       let interval = window.setInterval(function () {
-        countdown.innerHTML = me.count
+        countdown.innerText = me.count
         countdown.style.color = 'red'
         --me.count
         if (me.count < 0) {
