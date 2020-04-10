@@ -3,11 +3,11 @@
     <div class="el-header">
       <div style="position: relative">
         <p style="position: absolute;right: 30px">
-          <i>
+          <i v-if="this.$route.params.user!=null">
             <i>当前用户：<el-link href="" :underline="false" type="danger" v-text="this.$route.params.user.username"></el-link></i>
             <i><el-link href="">[退出]</el-link></i>
+            <el-button v-if="this.$route.params.user.username==='root'" style="width: 100px;height: 40px;border-radius: 0;" type="danger">管理用户</el-button>
           </i>
-          <el-button style="width: 100px;height: 40px;border-radius: 0;" type="danger">管理用户</el-button>
         </p>
       </div>
     </div>
@@ -17,7 +17,7 @@
       <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%">
         <el-table-column label="全选" type="selection" width="30"></el-table-column>
         <el-table-column type="index" label="序号" width="50"></el-table-column>
-<!--        <el-table-column v-for="item in tableColumns" :key="item.prop" :prop="item.prop" :label="item.label" :width="item.width"></el-table-column>-->
+        <el-table-column prop="id" label="id" v-if="false"></el-table-column>
         <el-table-column prop="category" label="商品类别" width="80"></el-table-column>
         <el-table-column prop="name" label="商品名称" width="110"></el-table-column>
         <el-table-column prop="author" label="作者" width="80"></el-table-column>
@@ -42,8 +42,8 @@
         <el-table-column prop="stock" label="库存" width="50"></el-table-column>
         <el-table-column label="商品状态" width="80">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.status==='1'" @click="handleDelete(scope.$index, tableData)" type="text" size="small">下架</el-button>
-            <el-button v-if="scope.row.status==='0'" @click="handleDelete(scope.$index, tableData)" type="text" size="small">上架</el-button>
+            <el-button v-if="scope.row.status==='1'" @click="upOrDown(scope.row)" type="text" size="small">下架</el-button>
+            <el-button v-if="scope.row.status==='2'" @click="upOrDown(scope.row)" type="text" size="small">上架</el-button>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="90" >
@@ -65,6 +65,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <span>总共{{total}}条</span>
+      <el-pagination
+        style="text-align: center"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="size"
+        layout="prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
+<!--      新增商品-->
       <el-dialog title="商品信息" :visible.sync="dialogFormVisible">
         <el-form :model="productForm" ref="productForm" label-width="140px">
           <el-form-item label="商品类别">
@@ -103,6 +113,42 @@
           <el-button style="margin-right: 100px" type="primary" @click="formSubmit('productForm')">确 定</el-button>
         </div>
       </el-dialog>
+<!--      编辑商品-->
+      <el-dialog title="商品信息" :visible.sync="dialogFormVisible1">
+        <el-form :model="productFormInfo" ref="productFormInfo" label-width="140px">
+          <el-form-item label="商品类别">
+            <el-input v-model="productFormInfo.category" autocomplete="off" style="width: 550px;" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="商品名称">
+            <el-input v-model="productFormInfo.name" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="作者">
+            <el-input v-model="productFormInfo.author" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="商品标题">
+            <el-input v-model="productFormInfo.subtitle" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="商品图片">
+            <el-input v-model="productFormInfo.image" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="商品详情">
+            <el-input v-model="productFormInfo.detail" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="原价">
+            <el-input v-model="productFormInfo.originalPrice" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="折扣价">
+            <el-input v-model="productFormInfo.discountPrice" autocomplete="on" style="width: 550px;"></el-input>
+          </el-form-item>
+          <el-form-item label="库存">
+            <el-input v-model="productFormInfo.stock" autocomplete="off" style="width: 550px;"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button style="float: left;margin-left: 100px" type="danger" @click="dialogFormVisible1 = false">取 消</el-button>
+          <el-button style="margin-right: 100px" type="primary" @click="formInfoSubmit('productFormInfo')">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -113,6 +159,7 @@ export default {
   data: function () {
     return {
       dialogFormVisible: false,
+      dialogFormVisible1: false,
       tableData: [],
       productForm: {
         name: '',
@@ -124,15 +171,19 @@ export default {
         discountPrice: '',
         stock: ''
       },
+      productFormInfo: {},
       options: [],
-      value: ''
+      value: '',
+      size: 5,
+      currentPage: 0,
+      total: 0
     }
   },
   created () {
     this.initFindAllProduct()
   },
   methods: {
-    initFindAllProduct () {
+    initFindAllProduct (val) {
       this.$axios.get('/adminFindAllProduct')
         .then((res) => {
           console.log(res)
@@ -150,6 +201,7 @@ export default {
         })
     },
     formSubmit (formName) {
+      console.log(formName)
       this.$axios.post('/adminInsertProduct', {
         productForm: this.productForm,
         category: this.value
@@ -164,6 +216,45 @@ export default {
           })
         }
       })
+    },
+    handleClick (row) {
+      this.dialogFormVisible1 = true
+      console.log(row)
+      this.productFormInfo = row
+    },
+    upOrDown (row) {
+      console.log(row)
+      this.$axios.post('/adminUpOrDown', {
+        productFormInfo: row
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.initFindAllProduct()
+        }
+      })
+    },
+    formInfoSubmit (formName) {
+      this.$axios.post('/adminUpdateProduct', {
+        productFormInfo: this.productFormInfo
+      }).then((res) => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.dialogFormVisible1 = false
+          this.$message({
+            type: 'success',
+            message: '新增商品成功' })
+          this.initFindAllProduct()
+        } else {
+          this.$alert(res.data.message, '提示', {
+            confirmButtonText: '确定'
+          })
+        }
+      })
+    },
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
     }
   }
 }
