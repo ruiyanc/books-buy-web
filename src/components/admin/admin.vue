@@ -6,9 +6,42 @@
           <i v-if="this.$route.params.user!=null">
             <i>当前用户：<el-link href="" :underline="false" type="danger" v-text="this.$route.params.user.username"></el-link></i>
             <i><el-link href="">[退出]</el-link></i>
-            <el-button v-if="this.$route.params.user.username==='root'" style="width: 100px;height: 40px;border-radius: 0;" type="danger">管理用户</el-button>
+            <el-button v-if="this.$route.params.user.username==='root'" @click="findAllUser()"
+                       style="width: 100px;height: 40px;border-radius: 0;" type="danger">管理用户</el-button>
           </i>
         </p>
+        <el-dialog title="用户信息" :visible.sync="dialogFormVisible2">
+          <el-table ref="userTable" :data="userTableData" tooltip-effect="dark" style="width: 100%">
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
+            <el-table-column prop="uid" label="uid" v-if="false"></el-table-column>
+            <el-table-column prop="username" label="用户名" ></el-table-column>
+            <el-table-column prop="password" label="密码" ></el-table-column>
+            <el-table-column prop="address" label="地址" ></el-table-column>
+            <el-table-column prop="phone" label="手机号" ></el-table-column>
+            <el-table-column label="权限" >
+              <template slot-scope="scope">
+                <span v-if="scope.row.role==='0'">超级管理员</span>
+                <span v-if="scope.row.role==='1'">管理员</span>
+                <span v-if="scope.row.role==='2'">普通用户</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="创建时间"  >
+              <template slot-scope="scope">
+                <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="更新时间"  >
+              <template slot-scope="scope">
+                <span>{{ scope.row.updateTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作">
+              <template slot-scope="scope">
+                <el-button @click="updateRole(scope.row)" type="text" size="small">权限</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-dialog>
       </div>
     </div>
     <div class="el-main">
@@ -24,7 +57,7 @@
         <el-table-column prop="subtitle" label="商品标题" width="200"></el-table-column>
         <el-table-column label="商品图片" width="180">
           <template slot-scope="scope">
-            <el-image :src="scope.row.image"></el-image>
+            <el-image :src="scope.row.image" style="width: 150px;height: 100px"></el-image>
             <p>{{scope.row.image}}</p>
           </template>
         </el-table-column>
@@ -65,12 +98,13 @@
           </template>
         </el-table-column>
       </el-table>
-      <span>总共{{total}}条</span>
+      <span>总共<i style="color: red">{{total}}</i>条</span>
       <el-pagination
         style="text-align: center"
+        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page.sync="currentPage"
-        :page-size="size"
+        :page-size="pageSize"
         layout="prev, pager, next, jumper"
         :total="total">
       </el-pagination>
@@ -160,7 +194,10 @@ export default {
     return {
       dialogFormVisible: false,
       dialogFormVisible1: false,
+      dialogFormVisible2: false,
       tableData: [],
+      presentTableData: [],
+      userTableData: [],
       productForm: {
         name: '',
         author: '',
@@ -174,8 +211,8 @@ export default {
       productFormInfo: {},
       options: [],
       value: '',
-      size: 5,
-      currentPage: 0,
+      pageSize: 4,
+      currentPage: 1,
       total: 0
     }
   },
@@ -183,23 +220,42 @@ export default {
     this.initFindAllProduct()
   },
   methods: {
-    initFindAllProduct (val) {
+    initFindAllProduct () {
       this.$axios.get('/adminFindAllProduct')
         .then((res) => {
-          console.log(res)
-          this.tableData = res.data
-          console.log(this.tableData)
+          this.currentPage = 1
+          this.presentTableData = res.data
+          this.tableData = this.presentTableData.slice((this.currentPage - 1) * this.pageSize,
+            (this.currentPage - 1) * this.pageSize + this.pageSize)
+          this.total = this.presentTableData.length
         })
+    },
+    findAllUser () {
+      this.dialogFormVisible2 = true
+      this.$axios.get('/adminFindAllUser')
+        .then((res) => {
+          console.log(res)
+          this.userTableData = res.data
+        })
+    },
+    updateRole (row) {
+      this.$axios.post('/adminUpdateUser', {
+        user: row
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success('修改权限成功！')
+          this.findAllUser()
+        }
+      })
     },
     showAllCategory () {
       this.dialogFormVisible = true
       this.$axios.get('/findAllCategory')
         .then((res) => {
-          console.log(res)
           this.options = res.data
-          console.log(this.options)
         })
     },
+    // 新增商品
     formSubmit (formName) {
       console.log(formName)
       this.$axios.post('/adminInsertProduct', {
@@ -208,6 +264,7 @@ export default {
       }).then(res => {
         console.log(res)
         if (res.data.code === 200) {
+          this.$message.success('新增商品成功！')
           this.dialogFormVisible = false
           this.initFindAllProduct()
         } else {
@@ -228,10 +285,12 @@ export default {
         productFormInfo: row
       }).then((res) => {
         if (res.data.code === 200) {
+          this.$message.success('上下架成功！')
           this.initFindAllProduct()
         }
       })
     },
+    // 修改商品
     formInfoSubmit (formName) {
       this.$axios.post('/adminUpdateProduct', {
         productFormInfo: this.productFormInfo
@@ -239,9 +298,7 @@ export default {
         console.log(res)
         if (res.data.code === 200) {
           this.dialogFormVisible1 = false
-          this.$message({
-            type: 'success',
-            message: '新增商品成功' })
+          this.$message.success('修改商品成功!')
           this.initFindAllProduct()
         } else {
           this.$alert(res.data.message, '提示', {
@@ -251,10 +308,13 @@ export default {
       })
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.tableData = this.presentTableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     },
+    // 页面跳转
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.tableData = this.presentTableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     }
   }
 }

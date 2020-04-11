@@ -300,7 +300,7 @@
                   </el-col>
                 </el-row>
               </el-tab-pane>
-              <el-tab-pane label="独家畅品">
+              <el-tab-pane label="学生必看">
                 <el-row>
                   <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
                           :offset="index > 0 ? 2 : 0">
