@@ -57,7 +57,7 @@
         <el-table-column prop="subtitle" label="商品标题" width="200"></el-table-column>
         <el-table-column label="商品图片" width="180">
           <template slot-scope="scope">
-            <el-image :src="scope.row.image" style="width: 150px;height: 100px"></el-image>
+            <el-image :src="scope.row.image" ></el-image>
             <p>{{scope.row.image}}</p>
           </template>
         </el-table-column>

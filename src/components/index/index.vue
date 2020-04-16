@@ -23,8 +23,13 @@
               |
             </i>
             <i v-if="this.$route.params.user">
-              <i>Hi，<el-link href="/#/info" :underline="false" type="danger" v-text="this.$route.params.user.username"></el-link></i>
-              <i><el-link href="">[退出]</el-link></i>
+              <i>Hi，
+                <el-link href="/#/info" :underline="false" type="danger"
+                         v-text="this.$route.params.user.username"></el-link>
+              </i>
+              <i>
+                <el-link href="">[退出]</el-link>
+              </i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
               <router-link to="/cart">购物车 |</router-link>
@@ -122,17 +127,17 @@
                   </el-col>
                   <el-col :span="3">
                     <div class="grid-content bg-purple">
-                      <router-link to=""><b>武侠小说</b></router-link>
+                      <router-link to=""><b>小说</b></router-link>
                     </div>
                   </el-col>
                   <el-col :span="3">
                     <div class="grid-content bg-purple">
-                      <router-link to=""><b>言情小说</b></router-link>
+                      <router-link to=""><b>教育</b></router-link>
                     </div>
                   </el-col>
                   <el-col :span="3">
                     <div class="grid-content bg-purple">
-                      <router-link to=""><b>儿童刊物</b></router-link>
+                      <router-link to=""><b>童书</b></router-link>
                     </div>
                   </el-col>
                 </el-row>
@@ -157,16 +162,6 @@
       <el-container>
         <el-aside width="200px">
           <div class="ul-left">
-            <!--            <el-tabs type="border-card" tab-position="left" style="width: 80%;position: fixed;z-index: 99">-->
-            <!--              <el-tab-pane label="用户管理">用户管理</el-tab-pane>-->
-            <!--              <el-tab-pane label="配置管理">配置管理</el-tab-pane>-->
-            <!--              <el-tab-pane label="角色管理">角色管理</el-tab-pane>-->
-            <!--              <el-tab-pane label="定时任务">定时任务</el-tab-pane>-->
-            <!--              <el-tab-pane label="定时任务">定时任务</el-tab-pane>-->
-            <!--              <el-tab-pane label="定时任务">定时任务</el-tab-pane>-->
-            <!--              <el-tab-pane label="定时任务">定时任务</el-tab-pane>-->
-            <!--              <el-tab-pane label="最后一个">定时任务</el-tab-pane>-->
-            <!--            </el-tabs>-->
             <ul>
               <li>
                 <el-link :underline="false">图书</el-link>
@@ -228,22 +223,19 @@
           <span>18:00场</span>
         </div>
         <el-row>
-          <el-col style="margin: 0;border-radius: 0" :span="4" v-for="(o, index) in 12" :key="o"
+          <el-col style="margin: 0;border-radius: 0" :span="4" v-for="(info, index) in infoData" :key="info"
                   :offset="index > 0 ? 2 : 0">
-            <el-card shadow="hover">
-              <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                   class="image" alt="看不清" width="150px" height="150px">
-              <!--              <el-image-->
-              <!--                style="width: 100%; display: block"-->
-              <!--                :src="infoData.imgUrl"-->
-              <!--                :fit="index">-->
-              <!--              </el-image>-->
-              <div style="padding: 14px;">
-                <span>好吃的汉堡</span>
+            <el-card shadow="hover" style="width: 250px;height: 170px">
+              <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                <el-image :src="info.image"></el-image>
+                {{info.name}}</a>
+              <div class="table" style="padding: 14px;">
+                <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                 <div class="bottom clearfix">
-                  <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                  <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
-                  <s>{{55}}</s>
+                  <span style="color: red;font-size: 14px">秒杀价：￥<i style="font-size: 17px">
+                    {{info.discountPrice.toFixed(2)}}&nbsp;</i>
+                  </span>
+                  <s style="font-size: 14px">{{info.originalPrice.toFixed(2)}}</s>
                 </div>
               </div>
             </el-card>
@@ -376,6 +368,49 @@
                 </el-row>
               </el-tab-pane>
             </el-tabs>
+            <!--            查看商品详情-->
+            <el-dialog title="商品信息" :visible.sync="dialogFormVisible">
+              <div class="center">
+                  <el-card shadow="never">
+                    <div style="float: left;width: 100px;height: 400px;border: 1px solid red">
+                      <el-image :src="productDetail.image"></el-image>
+                      <p><i class="el-icon-star-on"></i><span><i>{{collect}}</i></span></p>
+                    </div>
+                    <div style="margin-left: 100px">
+                    <div style="padding: 14px;">
+                      <h1 style="font-size: 18px">{{productDetail.name}}&nbsp;&nbsp;<i style="font-size: 14px">{{productDetail.subtitle}}</i></h1>
+                      <p>{{productDetail.detail}}</p>
+                      <p style="color: #646464;font-size: 14px">
+                        <span>作者：<i style="color: #1a66b3">{{productDetail.author}}</i></span>
+                        <span>出版时间：<i>{{productDetail.createTime | dateFormat('yyyy-MM-dd HH:mm:ss') }}</i></span>
+                      </p>
+                      <p>
+                        <span><i>
+                          <el-rate v-model="rate" style="display: inline" :colors="colors"></el-rate>&nbsp;
+                          <span><a>{{comment}}<i>条评论</i></a></span>
+                        </i></span>
+                      </p>
+                      <p>现价：<i style="color: red; font-size: 17px">{{productDetail.discountPrice}}&nbsp;&nbsp;</i>
+                      <span style="color: #99a9bf;font-size: 14px">原价：<s>{{productDetail.originalPrice}}</s></span>
+                      </p>
+                      <p>配送至：<i>{{address}}</i></p>
+                      <p>
+                        <el-input style="width: 135px" v-model="num" @change="handleInput(row)">
+                          <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del(row)">
+                          </el-button>
+                          <el-button size="small" icon="el-icon-plus" slot="append" @click="add(row)">
+                          </el-button>
+                        </el-input>
+                        <el-button type="danger" style="margin: auto 0;width: 120px;height: 40px;border-radius: 0"
+                                   icon="el-icon-shopping-cart-2" @click="addCart()">加入购物车</el-button>
+                        <el-button plain @click="addOrder()"
+                                   style="margin-left: 0;width: 92px;height: 40px;border-radius: 0">立即购买</el-button>
+                      </p>
+                    </div>
+                    </div>
+                  </el-card>
+              </div>
+            </el-dialog>
           </el-main>
           <el-aside width="220px">
             <div class="main-right">
@@ -398,7 +433,7 @@
                     </ul>
                   </el-card>
                 </el-tab-pane>
-                <el-tab-pane label="图书新品榜">
+                <el-tab-pane label="童书新品榜">
                   <el-card class="box-card">
                     <!--                    <div slot="header" class="clearfix">-->
                     <!--                      <span><el-link>图书畅销榜</el-link></span>-->
@@ -448,7 +483,7 @@
         <el-menu-item index="5" route="/index">
           <i class="el-icon-s-home"></i>
           <span slot="title">回到顶部</span>
-<!--          <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>-->
+          <!--          <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>-->
         </el-menu-item>
       </el-menu>
     </div>
@@ -463,10 +498,18 @@ export default {
       seen: false,
       input: '',
       select: '',
+      address: '北京',
       infoData: [],
+      dialogFormVisible: false,
       count: 120,
+      collect: 0,
+      comment: 0,
+      num: 1,
+      rate: null,
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
       lis: ['童书', '中小学', '外语', '考试', '小说', '文学', '青春文学',
         '励志', '管理', '历史', '亲子', '全部分类'],
+      productDetail: {},
       dataTops: [
         { title: '爱与和平', info: '讲述.....' },
         { title: '西游记', info: '讲述.....' },
@@ -546,6 +589,29 @@ export default {
     }
   },
   methods: {
+    handleClick (row) {
+      console.log(row)
+    },
+    viewDetails (product) {
+      this.dialogFormVisible = true
+      this.productDetail = product
+      console.log(product)
+    },
+    // 秒杀模块的商品12个
+    initFindAllProduct () {
+      this.$axios.get('/findAllProductSpice')
+        .then((res) => {
+          console.log(res.data)
+          this.infoData = res.data.slice(0, 12)
+        })
+      console.log(this.infoData)
+    },
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose (key, keyPath) {
+      console.log(key, keyPath)
+    },
     getAppear () {
       let address = document.getElementById('address')
       address.style.display = 'block'
@@ -563,6 +629,7 @@ export default {
       // alert('当前内容为：' + value)
       let result = this.$refs.result
       result.innerText = value
+      this.address = value
     },
     timer () {
       let countdown = document.getElementById('countdown')
@@ -582,6 +649,7 @@ export default {
     window.onload = () => {
       this.timer()
     }
+    this.initFindAllProduct()
   }
 }
 </script>
@@ -606,6 +674,7 @@ export default {
   .ul-left
     margin 0
     padding 0
+
   .ul-left li
     line-height 39px
     text-align center
@@ -665,6 +734,21 @@ export default {
     padding 0
     width 30px
     height 30px
+
   .center >>> .el-link--inner:hover
     color red
+
+  .table > a
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Firefox */
+    display: -moz-box;
+    -moz-line-clamp: 1;
+    -moz-box-orient: vertical;
+    /* Safari、Opera、Chrome */
+    display: -webkit-box;
+    /* 盒子垂直对齐 */
+    -webkit-box-orient: vertical;
+    /* 一行 */
+    -webkit-line-clamp: 1;
 </style>
