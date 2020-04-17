@@ -46,7 +46,7 @@
           <el-table-column label="全选" type="selection" width="80">
           </el-table-column>
           <el-table-column label="商品名称" width="330" style="text-align: center">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div>
                 <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>
                 <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>
@@ -59,7 +59,7 @@
             width="120">
           </el-table-column>
           <el-table-column label="数量" width="200">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div>
                 <el-input style="width: 135px" v-model="scope.row.number" @change="handleInput(scope.row)">
                   <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del(scope.row)">
@@ -71,7 +71,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="goodTotal" label="金额(元)" width="120">
-<!--            <template scope="scope">-->
+<!--            <template slot-scope="scope">-->
 <!--              <p @mouseenter="rowPrice(scope.row)">{{scope.row.goodTotal}}</p>-->
 <!--            </template>-->
           </el-table-column>
@@ -89,7 +89,7 @@
           </el-table-column>
         </el-table>
         <br>
-        <span style="font-family: Microsoft YaHei;color: red;padding-left: 70%">商品总价：{{moneyTotal}}元</span>
+        <span style="font-family: Microsoft YaHei,serif;color: red;padding-left: 70%">商品总价：{{moneyTotal}}元</span>
         <el-button style="float: right;width: 110px;height: 40px;border-radius: 0;" type="danger" @click="submit()">结算</el-button>
         <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
           <el-form :model="form">
@@ -194,9 +194,9 @@ export default {
       value.number += 1
       // this.handleInput(value)
     },
-    del (delGood) {
-      if (delGood.number > 1) {
-        delGood.number -= 1
+    del (value) {
+      if (value.number > 1) {
+        value.number -= 1
       }
     },
     // 返回的参数为选中行对应的对象

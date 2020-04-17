@@ -10,6 +10,11 @@ let axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:9091/api'
 Vue.prototype.$axios = axios
 
+// Vue.prototype.$axios = axios.create({
+//   headers: { 'Content-Type': 'application/json;charset=utf-8' }, // 设置传输内容的类型和编码
+//   withCredentials: true// 指定某个请求应该发送凭据。允许客户端携带跨域cookie，也需要此配置
+// })
+
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 

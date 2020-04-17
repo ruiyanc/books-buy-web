@@ -18,14 +18,14 @@
         </div>
         <div class="center-right">
           <p style="display: inline">
-            <i v-if="!this.$route.params.user">欢迎光临，请
+            <i v-if="!user">欢迎光临，请
               <router-link to="/login" style="color: red">登录</router-link>
               |
             </i>
-            <i v-if="this.$route.params.user">
+            <i v-if="user">
               <i>Hi，
                 <el-link href="/#/info" :underline="false" type="danger"
-                         v-text="this.$route.params.user.username"></el-link>
+                         v-text="user.username"></el-link>
               </i>
               <i>
                 <el-link href="">[退出]</el-link>
@@ -370,11 +370,16 @@
             </el-tabs>
             <!--            查看商品详情-->
             <el-dialog title="商品信息" :visible.sync="dialogFormVisible">
-              <div class="center">
+              <div class="center p">
                   <el-card shadow="never">
-                    <div style="float: left;width: 100px;height: 400px;border: 1px solid red">
+                    <div style="float: left;width: 120px;height: 400px;">
                       <el-image :src="productDetail.image"></el-image>
-                      <p><i class="el-icon-star-on"></i><span><i>{{collect}}</i></span></p>
+                      <p><a href="javascript:void(0);" title="收藏" style="color: #969696"
+                            @click="addOrDeleteCollect(productDetail)">
+                        <i class="el-icon-star-off" v-if="collect==null">收藏</i><br/>
+                        <i class="el-icon-star-on" v-if="collect!=null">已收藏</i><br/>
+                          <i>人气({{collectCounts}})</i>
+                      </a></p>
                     </div>
                     <div style="margin-left: 100px">
                     <div style="padding: 14px;">
@@ -387,7 +392,7 @@
                       <p>
                         <span><i>
                           <el-rate v-model="rate" style="display: inline" :colors="colors"></el-rate>&nbsp;
-                          <span><a>{{comment}}<i>条评论</i></a></span>
+                          <span><a>{{ comments }}<i>条评论</i></a></span>
                         </i></span>
                       </p>
                       <p>现价：<i style="color: red; font-size: 17px">{{productDetail.discountPrice}}&nbsp;&nbsp;</i>
@@ -395,10 +400,10 @@
                       </p>
                       <p>配送至：<i>{{address}}</i></p>
                       <p>
-                        <el-input style="width: 135px" v-model="num" @change="handleInput(row)">
-                          <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del(row)">
+                        <el-input style="width: 135px" v-model="num">
+                          <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del()">
                           </el-button>
-                          <el-button size="small" icon="el-icon-plus" slot="append" @click="add(row)">
+                          <el-button size="small" icon="el-icon-plus" slot="append" @click="add()">
                           </el-button>
                         </el-input>
                         <el-button type="danger" style="margin: auto 0;width: 120px;height: 40px;border-radius: 0"
@@ -499,11 +504,13 @@ export default {
       input: '',
       select: '',
       address: '北京',
+      user: this.$route.params.user == null ? null : this.$route.params.user,
       infoData: [],
       dialogFormVisible: false,
       count: 120,
-      collect: 0,
-      comment: 0,
+      collect: null,
+      collectCounts: 0,
+      comments: 0,
       num: 1,
       rate: null,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
@@ -592,10 +599,45 @@ export default {
     handleClick (row) {
       console.log(row)
     },
+    addOrDeleteCollect (productDetail) {
+      console.log(productDetail)
+      console.log(this.user)
+      this.$axios.post('/addOrDeleteCollectByProductId', {
+        productId: productDetail.id,
+        uid: this.user.uid
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.message)
+        }
+      })
+    },
     viewDetails (product) {
       this.dialogFormVisible = true
       this.productDetail = product
       console.log(product)
+      this.$axios.post('/findCollectByProductId', {
+        productId: this.productDetail.id,
+        uid: this.user.uid
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.collectCounts = res.data.collectCounts
+          this.collect = res.data.collect
+        }
+      })
+      // this.$axios.get('findCommentByProductId',
+      //   { productId: this.productDetail.id }
+      // ).then((res) => {
+      //   this.comments = res.data
+      // })
+    },
+    add () {
+      this.num += 1
+      // this.handleInput(value)
+    },
+    del () {
+      if (this.num > 1) {
+        this.num -= 1
+      }
     },
     // 秒杀模块的商品12个
     initFindAllProduct () {
@@ -751,4 +793,6 @@ export default {
     -webkit-box-orient: vertical;
     /* 一行 */
     -webkit-line-clamp: 1;
+  .center .p>p
+    margin 5px
 </style>
