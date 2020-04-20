@@ -269,23 +269,19 @@
             <el-tabs type="border-card">
               <el-tab-pane label="最新上架">
                 <el-row>
-                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
+                  <el-col style="margin: 0;border-radius: 0" :span="4" v-for="(info, index) in newTimeData" :key="info"
                           :offset="index > 0 ? 2 : 0">
-                    <el-card shadow="hover">
-                      <img
-                        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                        class="image" alt="看不清" width="150px" height="150px">
-                      <!--              <el-image-->
-                      <!--                style="width: 100%; display: block"-->
-                      <!--                :src="infoData.imgUrl"-->
-                      <!--                :fit="index">-->
-                      <!--              </el-image>-->
-                      <div style="padding: 14px;">
-                        <span>好吃的汉堡</span>
+                    <el-card shadow="never" style="width: 250px;height: 170px">
+                      <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                        <el-image :src="info.image"></el-image>
+                        {{info.name}}</a>
+                      <div class="table" style="padding: 14px;">
+                        <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                         <div class="bottom clearfix">
-                          <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
-                          <s>{{55}}</s>
+                         <span style="color: red;"><i style="font-size: 17px">
+                          {{info.discountPrice.toFixed(2)}}&nbsp;</i>
+                        </span>
+                          <s style="font-size: 14px">{{info.originalPrice.toFixed(2)}}</s>
                         </div>
                       </div>
                     </el-card>
@@ -342,7 +338,7 @@
                   </el-col>
                 </el-row>
               </el-tab-pane>
-              <el-tab-pane label="网络文学">
+              <el-tab-pane label="知名小说">
                 <el-row>
                   <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
                           :offset="index > 0 ? 2 : 0">
@@ -368,6 +364,25 @@
                 </el-row>
               </el-tab-pane>
             </el-tabs>
+<!--            查看所有评论信息-->
+            <el-dialog title="商品评论" :visible.sync="dialogFormVisible1">
+              <el-row>
+                <el-col style="margin: 0;border-radius: 0"  v-for="info in commentData" :key="info">
+                  <el-card shadow="never" >
+                    <div class="table">
+                      <el-rate text-color="#ff9900" disabled v-model="info.score" show-score="info.score" :colors="colors"></el-rate>
+                      <div class="bottom clearfix">
+                        <p><i style="font-size: 15px">{{info.commentInfo}}&nbsp;</i></p>
+                        <p>
+                          <i>{{ info.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</i>
+                          <i style="float:right;margin-right: 50px;color: brown">{{ info.username  }}</i>
+                        </p>
+                      </div>
+                    </div>
+                  </el-card>
+                </el-col>
+              </el-row>
+            </el-dialog>
             <!--            查看商品详情-->
             <el-dialog title="商品信息" :visible.sync="dialogFormVisible">
               <div class="center p">
@@ -391,8 +406,9 @@
                       </p>
                       <p>
                         <span><i>
-                          <el-rate v-model="rate" style="display: inline" :colors="colors"></el-rate>&nbsp;
-                          <span><a>{{ comments }}<i>条评论</i></a></span>
+                          <el-rate disabled v-model="avgRate" style="display: inline" :colors="colors"></el-rate>&nbsp;
+                          <span><a href="javascript:void(0);" title="评论" @click="findComments(productDetail)">
+                            {{ comments }}<i>条评论</i></a></span>
                         </i></span>
                       </p>
                       <p>现价：<i style="color: red; font-size: 17px">{{productDetail.discountPrice}}&nbsp;&nbsp;</i>
@@ -504,15 +520,22 @@ export default {
       input: '',
       select: '',
       address: '北京',
+      avgRate: null,
+      rate: null,
       user: this.$route.params.user == null ? null : this.$route.params.user,
       infoData: [],
+      commentData: [],
+      newTimeData: [],
+      studentData: [],
+      eBookData: [],
+      novelData: [],
       dialogFormVisible: false,
+      dialogFormVisible1: false,
       count: 120,
       collect: null,
       collectCounts: 0,
       comments: 0,
       num: 1,
-      rate: null,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
       lis: ['童书', '中小学', '外语', '考试', '小说', '文学', '青春文学',
         '励志', '管理', '历史', '亲子', '全部分类'],
@@ -611,6 +634,12 @@ export default {
         }
       })
     },
+    findComments () {
+      this.dialogFormVisible1 = true
+      console.log(this.commentData)
+      this.rate = this.commentData.score
+    },
+    // 查看详情
     viewDetails (product) {
       this.dialogFormVisible = true
       this.productDetail = product
@@ -624,11 +653,16 @@ export default {
           this.collect = res.data.collect
         }
       })
-      // this.$axios.get('findCommentByProductId',
-      //   { productId: this.productDetail.id }
-      // ).then((res) => {
-      //   this.comments = res.data
-      // })
+      this.$axios.post('findCommentByProductId',
+        { productId: this.productDetail.id }
+      ).then((res) => {
+        if (res.data.code === 200) {
+          this.comments = res.data.comments
+          this.commentData = res.data.commentData
+          this.avgRate = res.data.avgRate
+          // this.$refs.avgRate.innerText = res.data.avgRate
+        }
+      })
     },
     add () {
       this.num += 1
