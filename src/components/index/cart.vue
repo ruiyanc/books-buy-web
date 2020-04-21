@@ -3,7 +3,7 @@
       <div class="el-header" style="background-color: #f9f9f9;margin: 0;padding: 5px">
         <div class="center">
           <div class="center-left">
-            Hi,<i><el-link href="/#/info" :underline="false" type="danger">言睿</el-link></i>
+            Hi,<i v-if="user!=null"><el-link href="/#/info" :underline="false" type="danger" v-text="user.username"></el-link></i>
             <i><el-link href="">[退出]</el-link></i>
           </div>
           <div class="center-right">
@@ -119,6 +119,7 @@ export default {
     return {
       moneyTotal: 0,
       active: 0,
+      user: this.$route.params.user == null ? null : this.$route.params.user,
       tableData: [{
         goods: {
           img: require('@/assets/img/center-1.jpg'),

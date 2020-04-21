@@ -32,7 +32,7 @@
               </i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
-              <router-link to="/cart">购物车 |</router-link>
+              <router-link :to="{name: '/cart', params: {user: this.user}}">购物车 |</router-link>
             </i>
             <i>
               <router-link to="/order">我的订单 |</router-link>
@@ -147,7 +147,7 @@
           <el-aside width="220px">
             <div class="header-right">
               <el-button type="danger" class="cart" icon="el-icon-shopping-cart-2">
-                <router-link to="/cart">购物车</router-link>
+                <router-link :to="{name: '/cart', params: {user: this.user}}">购物车</router-link>
               </el-button>
               <el-button plain class="order">
                 <router-link to="/order">我的订单</router-link>
@@ -266,12 +266,12 @@
             </el-row>
           </el-aside>
           <el-main style="margin: 0;padding: 0">
-            <el-tabs type="border-card">
-              <el-tab-pane label="最新上架">
+            <el-tabs type="border-card" v-model="activeName"  @tab-click="findProductBy">
+              <el-tab-pane label="最新上架" name="0">
                 <el-row>
-                  <el-col style="margin: 0;border-radius: 0" :span="4" v-for="(info, index) in newTimeData" :key="info"
+                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(info, index) in labelData" :key="info"
                           :offset="index > 0 ? 2 : 0">
-                    <el-card shadow="never" style="width: 250px;height: 170px">
+                    <el-card shadow="never" style="width: 265px;height: 180px">
                       <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
                         <el-image :src="info.image"></el-image>
                         {{info.name}}</a>
@@ -279,84 +279,72 @@
                         <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                         <div class="bottom clearfix">
                          <span style="color: red;"><i style="font-size: 17px">
-                          {{info.discountPrice.toFixed(2)}}&nbsp;</i>
+                          ￥{{info.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>
                         </span>
-                          <s style="font-size: 14px">{{info.originalPrice.toFixed(2)}}</s>
+                          <s style="font-size: 14px">￥{{info.originalPrice.toFixed(2)}}</s>
                         </div>
                       </div>
                     </el-card>
                   </el-col>
                 </el-row>
               </el-tab-pane>
-              <el-tab-pane label="学生必看">
+              <el-tab-pane label="学生必看" name="1">
                 <el-row>
-                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
+                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(info, index) in labelData" :key="info"
                           :offset="index > 0 ? 2 : 0">
-                    <el-card shadow="hover">
-                      <img
-                        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                        class="image" alt="看不清" width="150px" height="150px">
-                      <!--              <el-image-->
-                      <!--                style="width: 100%; display: block"-->
-                      <!--                :src="infoData.imgUrl"-->
-                      <!--                :fit="index">-->
-                      <!--              </el-image>-->
-                      <div style="padding: 14px;">
-                        <span>好吃的汉堡</span>
+                    <el-card shadow="never" style="width: 265px;height: 180px">
+                      <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                        <el-image :src="info.image"></el-image>
+                        {{info.name}}</a>
+                      <div class="table" style="padding: 14px;">
+                        <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                         <div class="bottom clearfix">
-                          <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
-                          <s>{{55}}</s>
+                         <span style="color: red;"><i style="font-size: 17px">
+                          ￥{{info.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>
+                        </span>
+                          <s style="font-size: 14px">￥{{info.originalPrice.toFixed(2)}}</s>
                         </div>
                       </div>
                     </el-card>
                   </el-col>
                 </el-row>
               </el-tab-pane>
-              <el-tab-pane label="电子书">
+              <el-tab-pane label="电子书" name="2">
                 <el-row>
-                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
+                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(info, index) in labelData" :key="info"
                           :offset="index > 0 ? 2 : 0">
-                    <el-card shadow="hover">
-                      <img
-                        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                        class="image" alt="看不清" width="150px" height="150px">
-                      <!--              <el-image-->
-                      <!--                style="width: 100%; display: block"-->
-                      <!--                :src="infoData.imgUrl"-->
-                      <!--                :fit="index">-->
-                      <!--              </el-image>-->
-                      <div style="padding: 14px;">
-                        <span>好吃的汉堡</span>
+                    <el-card shadow="never" style="width: 265px;height: 180px">
+                      <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                        <el-image :src="info.image"></el-image>
+                        {{info.name}}</a>
+                      <div class="table" style="padding: 14px;">
+                        <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                         <div class="bottom clearfix">
-                          <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
-                          <s>{{55}}</s>
+                         <span style="color: red;"><i style="font-size: 17px">
+                          ￥{{info.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>
+                        </span>
+                          <s style="font-size: 14px">￥{{info.originalPrice.toFixed(2)}}</s>
                         </div>
                       </div>
                     </el-card>
                   </el-col>
                 </el-row>
               </el-tab-pane>
-              <el-tab-pane label="知名小说">
+              <el-tab-pane label="小说" name="3">
                 <el-row>
-                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(o, index) in 8" :key="o"
+                  <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(info, index) in labelData" :key="info"
                           :offset="index > 0 ? 2 : 0">
-                    <el-card shadow="hover">
-                      <img
-                        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                        class="image" alt="看不清" width="150px" height="150px">
-                      <!--              <el-image-->
-                      <!--                style="width: 100%; display: block"-->
-                      <!--                :src="infoData.imgUrl"-->
-                      <!--                :fit="index">-->
-                      <!--              </el-image>-->
-                      <div style="padding: 14px;">
-                        <span>好吃的汉堡</span>
+                    <el-card shadow="never" style="width: 265px;height: 180px">
+                      <a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                        <el-image :src="info.image"></el-image>
+                        {{info.name}}</a>
+                      <div class="table" style="padding: 14px;">
+                        <a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a>
                         <div class="bottom clearfix">
-                          <span style="color: red;font-size: 12px">秒杀价：￥</span>
-                          <span style="color: red;font-size: 16px">{{22}}&nbsp;</span>
-                          <s>{{55}}</s>
+                         <span style="color: red;"><i style="font-size: 17px">
+                          ￥{{info.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>
+                        </span>
+                          <s style="font-size: 14px">￥{{info.originalPrice.toFixed(2)}}</s>
                         </div>
                       </div>
                     </el-card>
@@ -480,7 +468,7 @@
     </div>
     <div>
       <hr style="border: 1px solid red"/>
-      <img src="@/assets/img/bottom.png" alt="看不清" style="margin: auto 10%">
+      <img src="@/assets/img/bottom.png" alt="看不清" style="margin: auto 20%">
     </div>
     <div class="sidebar">
       <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
@@ -522,13 +510,15 @@ export default {
       address: '北京',
       avgRate: null,
       rate: null,
+      activeName: '0',
       user: this.$route.params.user == null ? null : this.$route.params.user,
       infoData: [],
       commentData: [],
-      newTimeData: [],
-      studentData: [],
-      eBookData: [],
-      novelData: [],
+      // newTimeData: [],
+      // studentData: [],
+      // eBookData: [],
+      // novelData: [],
+      labelData: [],
       dialogFormVisible: false,
       dialogFormVisible1: false,
       count: 120,
@@ -619,9 +609,20 @@ export default {
     }
   },
   methods: {
-    handleClick (row) {
-      console.log(row)
+    // 按条件查询商品8条
+    findProductBy (tab, event) {
+      console.log(tab.label)
+      console.log(tab.name)
+      this.$axios.post('/findProductByLabel', {
+        label: tab.label,
+        name: tab.name
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.labelData = res.data.labelData
+        }
+      })
     },
+    // 收藏或取消收藏
     addOrDeleteCollect (productDetail) {
       console.log(productDetail)
       console.log(this.user)
@@ -634,6 +635,7 @@ export default {
         }
       })
     },
+    // 查看评论
     findComments () {
       this.dialogFormVisible1 = true
       console.log(this.commentData)
@@ -680,7 +682,13 @@ export default {
           console.log(res.data)
           this.infoData = res.data.slice(0, 12)
         })
-      console.log(this.infoData)
+      this.$axios.post('/findProductByLabel', {
+        name: this.activeName
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.labelData = res.data.labelData
+        }
+      })
     },
     handleOpen (key, keyPath) {
       console.log(key, keyPath)
@@ -726,6 +734,12 @@ export default {
       this.timer()
     }
     this.initFindAllProduct()
+  },
+  mounted () {
+    this.time = setInterval(this.timer, 5000)
+  },
+  beforeDestroy () {
+    clearInterval(this.time)
   }
 }
 </script>
