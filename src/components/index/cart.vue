@@ -45,23 +45,27 @@
           style="width: 100%" @selection-change="selected">
           <el-table-column label="全选" type="selection" width="80">
           </el-table-column>
-          <el-table-column label="商品名称" width="330" style="text-align: center">
+          <el-table-column label="商品名称" width="200" style="text-align: center">
             <template slot-scope="scope">
               <div>
-                <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>
-                <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>
+                <el-image :src="scope.row.image"></el-image>
+                <p>
+                  <i style="font-size: 16px;margin: 0">{{scope.row.name}}&nbsp;&nbsp;</i>
+<!--                  <i style="font-size: 14px;color: #969696">{{scope.row.author}}</i>-->
+                </p>
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="price"
-            label="单价(元)"
-            width="120">
+          <el-table-column prop="author" label="作者" width="180"></el-table-column>
+          <el-table-column label="单价(元)" width="120">
+            <template slot-scope="scope">
+              <span>{{ scope.row.discountPrice.toFixed(2) }}</span>
+            </template>
           </el-table-column>
           <el-table-column label="数量" width="200">
             <template slot-scope="scope">
               <div>
-                <el-input style="width: 135px" v-model="scope.row.number" @change="handleInput(scope.row)">
+                <el-input style="width: 135px" v-model="scope.row.quantity" @change="handleInput(scope.row)">
                   <el-button size="small" icon="el-icon-minus" slot="prepend" @click="del(scope.row)">
                   </el-button>
                   <el-button size="small" icon="el-icon-plus" slot="append" @click="add(scope.row)">
@@ -70,10 +74,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="goodTotal" label="金额(元)" width="120">
-<!--            <template slot-scope="scope">-->
-<!--              <p @mouseenter="rowPrice(scope.row)">{{scope.row.goodTotal}}</p>-->
-<!--            </template>-->
+          <el-table-column label="金额(元)" width="120">
+            <template slot-scope="scope">
+              <span>{{scope.row.goodTotal.toFixed(2)}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -105,7 +109,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="cancel()">取 消</el-button>
-            <el-button type="primary" @click="formSubmint()">确 定</el-button>
+            <el-button type="primary" @click="formSubmit()">确 定</el-button>
           </div>
         </el-dialog>
       </div>
@@ -120,23 +124,7 @@ export default {
       moneyTotal: 0,
       active: 0,
       user: this.$route.params.user == null ? null : this.$route.params.user,
-      tableData: [{
-        goods: {
-          img: require('@/assets/img/center-1.jpg'),
-          desc: '小米手环2'
-        },
-        price: 29.5,
-        number: 1,
-        goodTotal: 29.5
-      }, {
-        goods: {
-          img: require('@/assets/img/center-1.jpg'),
-          desc: '小米手环2'
-        },
-        price: 29.5,
-        number: 2,
-        goodTotal: 59
-      }],
+      tableData: this.$route.params.cartData,
       multipleSelection: [],
       dialogFormVisible: false,
       form: {
@@ -184,20 +172,22 @@ export default {
       })
     },
     handleInput (value) {
-      if (value.number == null || value.number === '') {
-        value.number = 1
+      if (value.quantity == null || value.number === '') {
+        value.quantity = 1
       }
-      value.goodTotal = (value.number * value.price).toFixed(2)
+      // this.$refs.goodTotal.innerText = (value.quantity * value.discountPrice).toFixed(2)
+      value.goodTotal = (value.quantity * value.discountPrice).toFixed(2)
       // 保留两位小数 //增加商品数量也需要重新计算商品总价
       this.selected(this.multipleSelection)
     },
     add (value) {
-      value.number += 1
-      // this.handleInput(value)
+      value.quantity += 1
+      this.handleInput(value)
     },
     del (value) {
-      if (value.number > 1) {
-        value.number -= 1
+      if (value.quantity > 1) {
+        value.quantity -= 1
+        this.handleInput(value)
       }
     },
     // 返回的参数为选中行对应的对象
@@ -206,11 +196,13 @@ export default {
       this.moneyTotal = 0
       // 此处不支持forEach循环，只能用原始方法了
       for (let i = 0; i < selection.length; i++) {
-        // 判断返回的值是否是字符串
+        //   判断返回的值是否是字符串
         if (typeof selection[i].goodTotal === 'string') {
-          selection[i].goodTotal = parseInt(selection[i].goodTotal)
+          selection[i].goodTotal = parseFloat(selection[i].goodTotal)
         }
         this.moneyTotal += selection[i].goodTotal
+        // this.moneyTotal += parseFloat(this.$refs.goodTotal[i].innerText)
+        // console.log(this.$refs.goodTotal[i].innerText)
       }
     },
     cancel () {
@@ -221,18 +213,16 @@ export default {
       this.active += 1
       this.dialogFormVisible = true
     },
-    formSubmint () {
+    formSubmit () {
       this.active += 1
       this.dialogFormVisible = false
       // 提交收货人信息到后台
       // 并提交到待付款订单且跳转到订单页面
-    },
-    created () {
-      window.onload = () => {
-        // this.toggleSelection()
-        // this.timer()
-        // this.rowPrice()
-      }
+    }
+  },
+  created () {
+    window.onload = () => {
+      this.toggleSelection()
     }
   }
 }

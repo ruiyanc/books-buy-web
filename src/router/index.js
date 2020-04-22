@@ -13,12 +13,12 @@ const routes = [
   },
   {
     path: '/cart',
-    name: '/cart',
+    name: 'cart',
     component: () => import('../components/index/cart')
   },
   {
     path: '/info',
-    name: '/info',
+    name: 'info',
     component: () => import('../components/index/info')
   },
   {

@@ -32,7 +32,7 @@
               </i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
-              <router-link :to="{name: '/cart', params: {user: this.user}}">购物车 |</router-link>
+              <router-link :to="{name: 'cart', params: {user: this.user}}">购物车 |</router-link>
             </i>
             <i>
               <router-link to="/order">我的订单 |</router-link>
@@ -147,7 +147,7 @@
           <el-aside width="220px">
             <div class="header-right">
               <el-button type="danger" class="cart" icon="el-icon-shopping-cart-2">
-                <router-link :to="{name: '/cart', params: {user: this.user}}">购物车</router-link>
+                <router-link  @click.native="goToCart()" to="">购物车</router-link>
               </el-button>
               <el-button plain class="order">
                 <router-link to="/order">我的订单</router-link>
@@ -411,8 +411,8 @@
                           </el-button>
                         </el-input>
                         <el-button type="danger" style="margin: auto 0;width: 120px;height: 40px;border-radius: 0"
-                                   icon="el-icon-shopping-cart-2" @click="addCart()">加入购物车</el-button>
-                        <el-button plain @click="addOrder()"
+                                   icon="el-icon-shopping-cart-2" @click="addCart(productDetail)">加入购物车</el-button>
+                        <el-button plain @click="addOrder(productDetail)"
                                    style="margin-left: 0;width: 92px;height: 40px;border-radius: 0">立即购买</el-button>
                       </p>
                     </div>
@@ -514,11 +514,8 @@ export default {
       user: this.$route.params.user == null ? null : this.$route.params.user,
       infoData: [],
       commentData: [],
-      // newTimeData: [],
-      // studentData: [],
-      // eBookData: [],
-      // novelData: [],
       labelData: [],
+      cartData: [],
       dialogFormVisible: false,
       dialogFormVisible1: false,
       count: 120,
@@ -609,16 +606,41 @@ export default {
     }
   },
   methods: {
+    goToCart () {
+      this.$axios.post('/findProductCart', {
+        uid: this.user.uid
+      }).then((res) => {
+        this.cartData = res.data
+        console.log(this.cartData)
+        this.$router.push({
+          name: 'cart',
+          params: { cartData: res.data, user: this.user }
+        })
+      })
+    },
+    // 添加到购物车
+    addCart (productDetail) {
+      console.log(productDetail)
+      this.$axios.post('/addProductToCart', {
+        productId: productDetail.id,
+        uid: this.user.uid,
+        quantity: this.num
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.message)
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
+    },
     // 按条件查询商品8条
     findProductBy (tab, event) {
-      console.log(tab.label)
-      console.log(tab.name)
       this.$axios.post('/findProductByLabel', {
         label: tab.label,
         name: tab.name
       }).then((res) => {
         if (res.data.code === 200) {
-          this.labelData = res.data.labelData
+          this.labelData = res.data.labelData.slice(0, 8)
         }
       })
     },
@@ -730,9 +752,9 @@ export default {
     }
   },
   created () {
-    window.onload = () => {
-      this.timer()
-    }
+    // window.onload = () => {
+    //   this.timer()
+    // }
     this.initFindAllProduct()
   },
   mounted () {
