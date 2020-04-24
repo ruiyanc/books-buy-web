@@ -32,7 +32,8 @@
               </i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
-              <router-link :to="{name: 'cart', params: {user: this.user}}">购物车 |</router-link>
+<!--              <router-link :to="{name: 'cart', params: {user: this.user}}">购物车 |</router-link>-->
+              <router-link  @click.native="goToCart()" to="">购物车</router-link>
             </i>
             <i>
               <router-link to="/order">我的订单 |</router-link>
@@ -420,6 +421,24 @@
                   </el-card>
               </div>
             </el-dialog>
+<!--            收货地址-->
+<!--            <el-dialog title="收货地址" :visible.sync="dialogFormVisible2">-->
+<!--              <el-form :model="form">-->
+<!--                <el-form-item label="收货人" label-width="150px">-->
+<!--                  <el-input v-model="form.name" autocomplete="off" style="width: 350px;"></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="手机号码" label-width="150px">-->
+<!--                  <el-input v-model="form.phone" autocomplete="off" style="width: 350px;"></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="所在地区" label-width="150px">-->
+<!--                  <el-input v-model="form.address" autocomplete="off" style="width: 350px;"></el-input>-->
+<!--                </el-form-item>-->
+<!--              </el-form>-->
+<!--              <div slot="footer" class="dialog-footer">-->
+<!--                <el-button @click="dialogFormVisible2=false">取 消</el-button>-->
+<!--                <el-button type="primary" @click="formSubmit()">确 定</el-button>-->
+<!--              </div>-->
+<!--            </el-dialog>-->
           </el-main>
           <el-aside width="220px">
             <div class="main-right">
@@ -516,8 +535,14 @@ export default {
       commentData: [],
       labelData: [],
       cartData: [],
+      // form: {
+      //   name: '',
+      //   phone: '',
+      //   address: ''
+      // },
       dialogFormVisible: false,
       dialogFormVisible1: false,
+      // dialogFormVisible2: false,
       count: 120,
       collect: null,
       collectCounts: 0,
@@ -606,6 +631,7 @@ export default {
     }
   },
   methods: {
+    // 跳转到购物车
     goToCart () {
       this.$axios.post('/findProductCart', {
         uid: this.user.uid
@@ -618,9 +644,55 @@ export default {
         })
       })
     },
+    addOrder (productDetail) {
+      // this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   this.$message({
+      //     type: 'success',
+      //     message: '删除成功!'
+      //   })
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '已取消删除'
+      //   })
+      // })
+      this.$confirm('是否立即付款？', '提示', {
+        confirmButtonText: '现在就付',
+        cancelButtonText: '稍后再付',
+        type: 'warning',
+        roundButton: false
+      }).then(() => {
+        this.$axios.post('/addProductToOrder', {
+          user: this.user,
+          productDetails: productDetail,
+          quantity: this.num,
+          address: this.address,
+          status: 1
+        }).then((res) => {
+          if (res.data.code === 200) {
+            this.$message.success('已付款，可在订单中查看！')
+          }
+        })
+      }).catch(() => {
+        this.$axios.post('/addProductToOrder', {
+          user: this.user,
+          productDetails: productDetail,
+          quantity: this.num,
+          address: this.address,
+          status: 2
+        }).then((res) => {
+          if (res.data.code === 200) {
+            this.$message.info('未付款，可在订单中查看！')
+          }
+        })
+      })
+    },
     // 添加到购物车
     addCart (productDetail) {
-      console.log(productDetail)
       this.$axios.post('/addProductToCart', {
         productId: productDetail.id,
         uid: this.user.uid,
@@ -758,7 +830,7 @@ export default {
     this.initFindAllProduct()
   },
   mounted () {
-    this.time = setInterval(this.timer, 5000)
+    this.time = setInterval(this.timer, 10000)
   },
   beforeDestroy () {
     clearInterval(this.time)

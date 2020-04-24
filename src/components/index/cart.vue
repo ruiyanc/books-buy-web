@@ -45,7 +45,7 @@
           style="width: 100%" @selection-change="selected">
           <el-table-column label="全选" type="selection" width="80">
           </el-table-column>
-          <el-table-column label="商品名称" width="200" style="text-align: center">
+          <el-table-column label="商品名称" width="180" style="text-align: center">
             <template slot-scope="scope">
               <div>
                 <el-image :src="scope.row.image"></el-image>
@@ -55,6 +55,8 @@
                 </p>
               </div>
             </template>
+          </el-table-column>
+          <el-table-column prop="subtitle" label="商品标题" width="180">
           </el-table-column>
           <el-table-column prop="author" label="作者" width="180"></el-table-column>
           <el-table-column label="单价(元)" width="120">
@@ -79,20 +81,25 @@
               <span>{{scope.row.goodTotal.toFixed(2)}}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="120">
+          <el-table-column label="创建时间" width="90">
             <template slot-scope="scope">
-            <el-button type="text" size="small">
-              移入收藏
-            </el-button>
-              <el-button @click="handleDelete(scope.$index, tableData)"
+              <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" width="120">
+            <template slot-scope="scope">
+              <el-button type="text" size="small">
+                移入收藏
+              </el-button>
+              <el-button @click="handleDelete(scope.$index, scope.row)"
                 type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <br>
+        <el-button type="danger" style="float:left;width: 100px;height: 40px;border-radius: 0;">
+          <router-link :to="{name: 'index', params: {user: this.user}}">返回</router-link>
+        </el-button>
         <span style="font-family: Microsoft YaHei,serif;color: red;padding-left: 70%">商品总价：{{moneyTotal}}元</span>
         <el-button style="float: right;width: 110px;height: 40px;border-radius: 0;" type="danger" @click="submit()">结算</el-button>
         <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
@@ -165,8 +172,15 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.tableData.splice(index, 1)
-        this.$message({ type: 'success', message: '删除成功!' })
+        this.$axios.post('/delProductToCart', {
+          cart: row,
+          uid: this.user.uid
+        }).then((res) => {
+          if (res.data.code === 200) {
+            this.tableData.splice(index, 1)
+            this.$message({ type: 'success', message: '删除成功!' })
+          }
+        })
       }).catch(() => {
         this.$message({ type: 'info', message: '已取消删除' })
       })
@@ -210,6 +224,7 @@ export default {
       this.dialogFormVisible = false
     },
     submit () {
+      console.log(this.multipleSelection)
       this.active += 1
       this.dialogFormVisible = true
     },
@@ -217,6 +232,16 @@ export default {
       this.active += 1
       this.dialogFormVisible = false
       // 提交收货人信息到后台
+      this.$axios.post('/addProductToOrder', {
+        productDetails: this.multipleSelection,
+        user: this.form,
+        address: this.form.address,
+        status: 1
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.info('未付款，可在订单中查看！')
+        }
+      })
       // 并提交到待付款订单且跳转到订单页面
     }
   },
