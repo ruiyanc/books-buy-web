@@ -19,7 +19,7 @@
         <div class="center-right">
           <p style="display: inline">
             <i>
-              Hi,<i><el-link href="/#/info" :underline="false" type="danger">言睿</el-link></i>
+              Hi,<i v-if="user!=null"><el-link href="/#/info" :underline="false" type="danger" v-text="user.username"></el-link></i>
               <i><el-link href="">[退出]</el-link></i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
@@ -151,7 +151,7 @@
     <hr style="border: 1px solid red;padding: 0;margin: 0"/>
     <div class="info">
       <div class="center">
-        <el-tabs type="border-card" tab-position="left" style="width: 85%;height: 400px;position: fixed">
+        <el-tabs type="border-card" tab-position="left" style="width: 100%;height: 680px">
           <el-tab-pane label="我的订单">
             <div style="float: right;">
                 <el-input style="width: 260px" type="text" placeholder="商品名称/订单号/收货人姓名" @input="change()"></el-input>
@@ -174,32 +174,44 @@
 <!--                            style="width: 100%" @selection-change="selected">-->
 <!--                    <el-table-column label="全选" type="selection" width="80">-->
 <!--                    </el-table-column>-->
-<!--                    <el-table-column label="商品名称" width="600" style="text-align: center">-->
-<!--                      <template scope="scope">-->
+<!--                    <el-table-column label="商品名称" width="600">-->
+<!--                      <template slot-scope="scope">-->
 <!--                        <div>-->
-<!--                          <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>-->
-<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>-->
-<!--                          <i>￥{{scope.row.goods.price}}</i>-->
-<!--                          <i>{{scope.row.goods.number}}</i>-->
+<!--                          <el-image :src="scope.row.image"></el-image>-->
+<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.productName}}</p>-->
+<!--                          单价：<i style="color: red; font-size: 17px">{{scope.row.price}}&nbsp;&nbsp;</i>-->
 <!--                        </div>-->
 <!--                      </template>-->
 <!--                    </el-table-column>-->
-<!--                    <el-table-column label="订单状态" width="100">-->
-<!--                      {{goods.status}}-->
+<!--                    <el-table-column prop="quantity" label="数量" width="80"></el-table-column>-->
+<!--                    <el-table-column prop="status" label="订单状态" width="100">-->
 <!--                    </el-table-column>-->
 <!--                    <el-table-column-->
 <!--                      fixed="right"-->
 <!--                      label="操作"-->
 <!--                      width="120">-->
 <!--                      <template slot-scope="scope">-->
-<!--                        <el-button type="text" size="small">-->
-<!--                          移入收藏-->
-<!--                        </el-button>-->
 <!--                        <el-button @click="handleDelete(scope.$index, tableData)"-->
 <!--                                   type="text" size="small">删除订单</el-button>-->
 <!--                      </template>-->
 <!--                    </el-table-column>-->
 <!--                  </el-table>-->
+                  <ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
+                    <li v-for="info in tableData" :key="info" class="infinite-list-item">
+                      <el-card shadow="never" style="width: 100%;height: 230px">
+                        <p>订单号：{{info.orderNo}}</p>
+                        <div class="table" style="padding: 14px;">
+                          <a href="javascript:void(0);" style="font-size: 15px;color: #646464" >
+                            <el-image :src="info.image"></el-image>
+                            {{info.productName}}</a>
+                          <p><i>单价：{{info.price}}</i>
+                          <i>数量：{{info.quantity}}</i>
+                          <i>{{info.totalPrice}}</i>
+                          </p>
+                        </div>
+                      </el-card>
+                    </li>
+                  </ul>
                 </el-card>
               </el-tab-pane>
               <el-tab-pane label="待付款">
@@ -326,6 +338,8 @@ export default {
       content: '',
       seen: false,
       input: '',
+      count: 0,
+      user: this.$route.params.user,
       addresses: [
         [
           { value: '北京' },
@@ -377,26 +391,14 @@ export default {
           { value: '钓鱼岛' }
         ]
       ],
-      tableData: [{
-        goods: {
-          img: require('@/assets/img/center-1.jpg'),
-          desc: '小米手环2'
-        },
-        price: 29.5,
-        number: 1,
-        goodTotal: 29.5
-      }, {
-        goods: {
-          img: require('@/assets/img/center-1.jpg'),
-          desc: '小米手环2'
-        },
-        price: 29.5,
-        number: 2,
-        goodTotal: 59
-      }]
+      tableData: this.$route.params.orderData
+      // orderData: []
     }
   },
   methods: {
+    load () {
+      this.count += 2
+    },
     getAppear () {
       let address = document.getElementById('address')
       address.style.display = 'block'
@@ -414,6 +416,20 @@ export default {
       // alert('当前内容为：' + value)
       let result = this.$refs.result
       result.innerText = value
+    },
+    selected (selection) {
+      this.multipleSelection = selection
+      this.moneyTotal = 0
+      // 此处不支持forEach循环，只能用原始方法了
+      for (let i = 0; i < selection.length; i++) {
+        //   判断返回的值是否是字符串
+        if (typeof selection[i].goodTotal === 'string') {
+          selection[i].goodTotal = parseFloat(selection[i].goodTotal)
+        }
+        this.moneyTotal += selection[i].goodTotal
+        // this.moneyTotal += parseFloat(this.$refs.goodTotal[i].innerText)
+        // console.log(this.$refs.goodTotal[i].innerText)
+      }
     },
     change (e) {
       this.$forceUpdate()

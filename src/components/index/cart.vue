@@ -88,9 +88,6 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small">
-                移入收藏
-              </el-button>
               <el-button @click="handleDelete(scope.$index, scope.row)"
                 type="text" size="small">删除</el-button>
             </template>
@@ -130,7 +127,8 @@ export default {
     return {
       moneyTotal: 0,
       active: 0,
-      user: this.$route.params.user == null ? null : this.$route.params.user,
+      collect: null,
+      user: this.$route.params.user,
       tableData: this.$route.params.cartData,
       multipleSelection: [],
       dialogFormVisible: false,
@@ -166,6 +164,7 @@ export default {
         this.$refs.multipleTable.clearSelection()
       }
     },
+    // 删除购物车商品
     handleDelete (index, row) {
       this.$confirm('确定删除该商品？', '提示', {
         confirmButtonText: '确定',
@@ -232,15 +231,41 @@ export default {
       this.active += 1
       this.dialogFormVisible = false
       // 提交收货人信息到后台
-      this.$axios.post('/addProductToOrder', {
-        productDetails: this.multipleSelection,
-        user: this.form,
-        address: this.form.address,
-        status: 1
-      }).then((res) => {
-        if (res.data.code === 200) {
-          this.$message.info('未付款，可在订单中查看！')
-        }
+      this.$confirm('是否立即付款？', '提示', {
+        confirmButtonText: '现在就付',
+        cancelButtonText: '稍后再付',
+        type: 'warning',
+        roundButton: false
+      }).then(() => {
+        this.$axios.post('/cartAddProductToOrder', {
+          productDetails: this.multipleSelection,
+          user: this.form,
+          uid: this.user.uid,
+          moneyTotal: this.moneyTotal,
+          address: this.form.address,
+          status: 2
+        }).then((res) => {
+          if (res.data.code === 200) {
+            this.$message.info('未付款，可在订单中查看！')
+          } else {
+            this.$message.info(res.data.message)
+          }
+        })
+      }).catch(() => {
+        this.$axios.post('/cartAddProductToOrder', {
+          productDetails: this.multipleSelection,
+          user: this.form,
+          uid: this.user.uid,
+          moneyTotal: this.moneyTotal.toFixed(2),
+          address: this.form.address,
+          status: 1
+        }).then((res) => {
+          if (res.data.code === 200) {
+            this.$message.info('未付款，可在订单中查看！')
+          } else {
+            this.$message.info(res.data.message)
+          }
+        })
       })
       // 并提交到待付款订单且跳转到订单页面
     }

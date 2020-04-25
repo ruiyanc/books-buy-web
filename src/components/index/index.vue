@@ -33,13 +33,13 @@
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
 <!--              <router-link :to="{name: 'cart', params: {user: this.user}}">购物车 |</router-link>-->
-              <router-link  @click.native="goToCart()" to="">购物车</router-link>
+              <router-link  @click.native="goToCart()" to="">购物车 |</router-link>
             </i>
             <i>
-              <router-link to="/order">我的订单 |</router-link>
+              <router-link  @click.native="goToInfo()" to="">我的订单 |</router-link>
             </i>
             <i>
-              <router-link to="/info">个人信息 |</router-link>
+              <router-link  @click.native="goToInfo()" to="">个人信息 |</router-link>
             </i>
             <i>
               <router-link to="">我要出书 |</router-link>
@@ -421,24 +421,6 @@
                   </el-card>
               </div>
             </el-dialog>
-<!--            收货地址-->
-<!--            <el-dialog title="收货地址" :visible.sync="dialogFormVisible2">-->
-<!--              <el-form :model="form">-->
-<!--                <el-form-item label="收货人" label-width="150px">-->
-<!--                  <el-input v-model="form.name" autocomplete="off" style="width: 350px;"></el-input>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="手机号码" label-width="150px">-->
-<!--                  <el-input v-model="form.phone" autocomplete="off" style="width: 350px;"></el-input>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="所在地区" label-width="150px">-->
-<!--                  <el-input v-model="form.address" autocomplete="off" style="width: 350px;"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-form>-->
-<!--              <div slot="footer" class="dialog-footer">-->
-<!--                <el-button @click="dialogFormVisible2=false">取 消</el-button>-->
-<!--                <el-button type="primary" @click="formSubmit()">确 定</el-button>-->
-<!--              </div>-->
-<!--            </el-dialog>-->
           </el-main>
           <el-aside width="220px">
             <div class="main-right">
@@ -534,15 +516,8 @@ export default {
       infoData: [],
       commentData: [],
       labelData: [],
-      cartData: [],
-      // form: {
-      //   name: '',
-      //   phone: '',
-      //   address: ''
-      // },
       dialogFormVisible: false,
       dialogFormVisible1: false,
-      // dialogFormVisible2: false,
       count: 120,
       collect: null,
       collectCounts: 0,
@@ -631,13 +606,23 @@ export default {
     }
   },
   methods: {
+    // 跳转到个人信息
+    goToInfo () {
+      this.$axios.post('/findOrderInfo', {
+        uid: this.user.uid
+      }).then((res) => {
+        console.log(res.data)
+        this.$router.push({
+          name: 'info',
+          params: { orderData: res.data, user: this.user }
+        })
+      })
+    },
     // 跳转到购物车
     goToCart () {
       this.$axios.post('/findProductCart', {
         uid: this.user.uid
       }).then((res) => {
-        this.cartData = res.data
-        console.log(this.cartData)
         this.$router.push({
           name: 'cart',
           params: { cartData: res.data, user: this.user }
@@ -645,21 +630,6 @@ export default {
       })
     },
     addOrder (productDetail) {
-      // this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   this.$message({
-      //     type: 'success',
-      //     message: '删除成功!'
-      //   })
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已取消删除'
-      //   })
-      // })
       this.$confirm('是否立即付款？', '提示', {
         confirmButtonText: '现在就付',
         cancelButtonText: '稍后再付',
@@ -671,10 +641,12 @@ export default {
           productDetails: productDetail,
           quantity: this.num,
           address: this.address,
-          status: 1
+          status: 2
         }).then((res) => {
           if (res.data.code === 200) {
             this.$message.success('已付款，可在订单中查看！')
+          } else {
+            this.$message.info(res.data.message)
           }
         })
       }).catch(() => {
@@ -683,10 +655,12 @@ export default {
           productDetails: productDetail,
           quantity: this.num,
           address: this.address,
-          status: 2
+          status: 1
         }).then((res) => {
           if (res.data.code === 200) {
             this.$message.info('未付款，可在订单中查看！')
+          } else {
+            this.$message.info(res.data.message)
           }
         })
       })
@@ -718,8 +692,6 @@ export default {
     },
     // 收藏或取消收藏
     addOrDeleteCollect (productDetail) {
-      console.log(productDetail)
-      console.log(this.user)
       this.$axios.post('/addOrDeleteCollectByProductId', {
         productId: productDetail.id,
         uid: this.user.uid
@@ -824,17 +796,17 @@ export default {
     }
   },
   created () {
-    // window.onload = () => {
-    //   this.timer()
-    // }
+    window.onload = () => {
+      this.timer()
+    }
     this.initFindAllProduct()
-  },
-  mounted () {
-    this.time = setInterval(this.timer, 10000)
-  },
-  beforeDestroy () {
-    clearInterval(this.time)
   }
+  // mounted () {
+  //   this.time = setInterval(this.timer, 10000)
+  // },
+  // beforeDestroy () {
+  //   clearInterval(this.time)
+  // }
 }
 </script>
 
