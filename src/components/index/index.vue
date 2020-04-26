@@ -151,7 +151,7 @@
                 <router-link  @click.native="goToCart()" to="">购物车</router-link>
               </el-button>
               <el-button plain class="order">
-                <router-link to="/order">我的订单</router-link>
+                <router-link  @click.native="goToInfo()" to="">我的订单</router-link>
               </el-button>
             </div>
           </el-aside>

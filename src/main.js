@@ -4,11 +4,14 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import common from './components/common/js/common'
 
 // 设置反向代理，前端请求发送到http://localhost:9091/api
 let axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:9091/api'
 Vue.prototype.$axios = axios
+
+Vue.use(common)
 
 // Vue.prototype.$axios = axios.create({
 //   headers: { 'Content-Type': 'application/json;charset=utf-8' }, // 设置传输内容的类型和编码

@@ -23,13 +23,13 @@
               <i><el-link href="">[退出]</el-link></i>
             </i>
             <i class="el-icon-shopping-cart-1" style="color: red">
-              <router-link to="/cart">购物车 |</router-link>
+              <router-link  @click.native="this.goToCart()" to="">购物车 |</router-link>
             </i>
             <i>
-              <router-link to="/order">我的订单 |</router-link>
+              <router-link  @click.native="this.goToInfo()" to="">我的订单 |</router-link>
             </i>
             <i>
-              <router-link to="/info">个人信息 |</router-link>
+              <router-link  @click.native="this.goToInfo()" to="">个人信息 |</router-link>
             </i>
             <i>
               <router-link to="">我要出书 |</router-link>
@@ -151,13 +151,14 @@
     <hr style="border: 1px solid red;padding: 0;margin: 0"/>
     <div class="info">
       <div class="center">
-        <el-tabs type="border-card" tab-position="left" style="width: 100%;height: 680px">
-          <el-tab-pane label="我的订单">
+        <el-tabs type="border-card" tab-position="left" style="width: 100%;height: 600px"
+                 v-model="activeName" @tab-click="findAnyThingsBy">
+          <el-tab-pane label="我的订单" name="order">
             <div style="float: right;">
                 <el-input style="width: 260px" type="text" placeholder="商品名称/订单号/收货人姓名" @input="change()"></el-input>
                 <el-button style="border-radius: 0" @click="find(content)">搜索</el-button>
             </div>
-            <el-tabs>
+            <el-tabs @tab-click="findOrderBy">
               <div class="date">
                 <p>
                   下单时间：
@@ -168,163 +169,289 @@
                   <i><el-link :underline="false" @click="dateSearch($event)">一年前</el-link></i>
                 </p>
               </div>
-              <el-tab-pane label="全部订单">
+              <el-tab-pane label="全部订单" name="0">
                 <el-card shadow="never">
-<!--                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"-->
-<!--                            style="width: 100%" @selection-change="selected">-->
-<!--                    <el-table-column label="全选" type="selection" width="80">-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="商品名称" width="600">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <div>-->
-<!--                          <el-image :src="scope.row.image"></el-image>-->
-<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.productName}}</p>-->
-<!--                          单价：<i style="color: red; font-size: 17px">{{scope.row.price}}&nbsp;&nbsp;</i>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column prop="quantity" label="数量" width="80"></el-table-column>-->
-<!--                    <el-table-column prop="status" label="订单状态" width="100">-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column-->
-<!--                      fixed="right"-->
-<!--                      label="操作"-->
-<!--                      width="120">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <el-button @click="handleDelete(scope.$index, tableData)"-->
-<!--                                   type="text" size="small">删除订单</el-button>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                  </el-table>-->
-                  <ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
-                    <li v-for="info in tableData" :key="info" class="infinite-list-item">
-                      <el-card shadow="never" style="width: 100%;height: 230px">
-                        <p>订单号：{{info.orderNo}}</p>
-                        <div class="table" style="padding: 14px;">
-                          <a href="javascript:void(0);" style="font-size: 15px;color: #646464" >
-                            <el-image :src="info.image"></el-image>
-                            {{info.productName}}</a>
-                          <p><i>单价：{{info.price}}</i>
-                          <i>数量：{{info.quantity}}</i>
-                          <i>{{info.totalPrice}}</i>
-                          </p>
-                        </div>
-                      </el-card>
-                    </li>
-                  </ul>
+                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                            style="width: 100%" @selection-change="selected">
+                    <el-table-column label="全选" type="selection" width="60">
+                    </el-table-column>
+                    <el-table-column label="订单号" width="220">
+                      <template slot-scope="scope">
+                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="总价(元)" width="100">
+                      <template slot-scope="scope">
+                        <span>{{scope.row.payment.toFixed(2)}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="订单状态" prop="status" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.status==='1'">待付款</span>
+                        <span v-if="scope.row.status==='2'">待发货</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="shippingName" label="收货人" width="80">
+                    </el-table-column>
+                    <el-table-column prop="address" label="收货地址" width="120">
+                    </el-table-column>
+                    <el-table-column label="创建时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="更新时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.updateTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      fixed="right"
+                      label="操作"
+                      width="150">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small">
+                          <span v-if="scope.row.status==='1'">去付款</span>
+                          <span v-if="scope.row.status==='2'">去评价</span>
+                        </el-button>
+                        <el-button @click="handleDelete(scope.$index, tableData)"
+                                   type="text" size="small">删除订单</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-pagination
+                    style="text-align: center"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="pageSize"
+                    layout="prev, pager, next, jumper"
+                    :total="total">
+                  </el-pagination>
                 </el-card>
               </el-tab-pane>
-              <el-tab-pane label="待付款">
+              <el-tab-pane label="待付款" name="1">
                 <el-card shadow="never">
-<!--                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"-->
-<!--                            style="width: 100%" @selection-change="selected">-->
-<!--                    <el-table-column label="全选" type="selection" width="80">-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="商品名称" width="600" style="text-align: center">-->
-<!--                      <template scope="scope">-->
-<!--                        <div>-->
-<!--                          <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>-->
-<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>-->
-<!--                          <i>￥{{scope.row.goods.price}}</i>-->
-<!--                          <i>{{scope.row.goods.number}}</i>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="订单状态" width="100">-->
-<!--                      {{goods.status}}-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column-->
-<!--                      fixed="right"-->
-<!--                      label="操作"-->
-<!--                      width="120">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <el-button type="text" size="small">-->
-<!--                          结算-->
-<!--                        </el-button>-->
-<!--                        <el-button @click="handleDelete(scope.$index, tableData)"-->
-<!--                                   type="text" size="small">删除订单</el-button>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                  </el-table>-->
+                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                            style="width: 100%" @selection-change="selected">
+                    <el-table-column label="全选" type="selection" width="60">
+                    </el-table-column>
+                    <el-table-column label="订单号" width="220">
+                      <template slot-scope="scope">
+                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="总价(元)" width="100">
+                      <template slot-scope="scope">
+                        <span>{{scope.row.payment.toFixed(2)}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="订单状态" prop="status" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.status==='1'">待付款</span>
+                        <span v-if="scope.row.status==='2'">待发货</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="shippingName" label="收货人" width="80">
+                    </el-table-column>
+                    <el-table-column prop="address" label="收货地址" width="120">
+                    </el-table-column>
+                    <el-table-column label="创建时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="更新时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.updateTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      fixed="right"
+                      label="操作"
+                      width="150">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small">
+                          <span v-if="scope.row.status==='1'">去付款</span>
+                          <span v-if="scope.row.status==='2'">去评价</span>
+                        </el-button>
+                        <el-button @click="handleDelete(scope.$index, tableData)"
+                                   type="text" size="small">删除订单</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-pagination
+                    style="text-align: center"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="pageSize"
+                    layout="prev, pager, next, jumper"
+                    :total="total">
+                  </el-pagination>
                 </el-card>
               </el-tab-pane>
-              <el-tab-pane label="待收货">
+              <el-tab-pane label="已付款" name="2">
                 <el-card shadow="never">
-<!--                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"-->
-<!--                            style="width: 100%" @selection-change="selected">-->
-<!--                    <el-table-column label="全选" type="selection" width="80">-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="商品名称" width="600" style="text-align: center">-->
-<!--                      <template scope="scope">-->
-<!--                        <div>-->
-<!--                          <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>-->
-<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>-->
-<!--                          <i>￥{{scope.row.goods.price}}</i>-->
-<!--                          <i>{{scope.row.goods.number}}</i>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="订单状态" width="100">-->
-<!--                      {{goods.status}}-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column-->
-<!--                      fixed="right"-->
-<!--                      label="操作"-->
-<!--                      width="120">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <el-button type="text" size="small">-->
-<!--                          查看物流-->
-<!--                        </el-button>-->
-<!--                        <el-button @click="handleDelete(scope.$index, tableData)"-->
-<!--                                   type="text" size="small">删除订单</el-button>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                  </el-table>-->
+                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                            style="width: 100%" @selection-change="selected">
+                    <el-table-column label="全选" type="selection" width="60">
+                    </el-table-column>
+                    <el-table-column label="订单号" width="220">
+                      <template slot-scope="scope">
+                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="总价(元)" width="100">
+                      <template slot-scope="scope">
+                        <span>{{scope.row.payment.toFixed(2)}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="订单状态" prop="status" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.status==='1'">待付款</span>
+                        <span v-if="scope.row.status==='2'">待发货</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="shippingName" label="收货人" width="80">
+                    </el-table-column>
+                    <el-table-column prop="address" label="收货地址" width="120">
+                    </el-table-column>
+                    <el-table-column label="创建时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="更新时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.updateTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      fixed="right"
+                      label="操作"
+                      width="150">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small">
+                          <span v-if="scope.row.status==='1'">去付款</span>
+                          <span v-if="scope.row.status==='2'">去评价</span>
+                        </el-button>
+                        <el-button @click="handleDelete(scope.$index, tableData)"
+                                   type="text" size="small">删除订单</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-pagination
+                    style="text-align: center"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="pageSize"
+                    layout="prev, pager, next, jumper"
+                    :total="total">
+                  </el-pagination>
                 </el-card>
               </el-tab-pane>
-              <el-tab-pane label="待评价">
+              <el-tab-pane label="待评价" name="3">
                 <el-card shadow="never">
-<!--                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"-->
-<!--                            style="width: 100%" @selection-change="selected">-->
-<!--                    <el-table-column label="全选" type="selection" width="80">-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="商品名称" width="600" style="text-align: center">-->
-<!--                      <template scope="scope">-->
-<!--                        <div>-->
-<!--                          <el-image :src="scope.row.goods.img" style="width: 160px;height: 80px"></el-image>-->
-<!--                          <p style="font-size: 18px;margin: 0;padding: 0 15%">{{scope.row.goods.desc}}</p>-->
-<!--                          <i>￥{{scope.row.goods.price}}</i>-->
-<!--                          <i>{{scope.row.goods.number}}</i>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column label="订单状态" width="100">-->
-<!--                      {{goods.status}}-->
-<!--                    </el-table-column>-->
-<!--                    <el-table-column-->
-<!--                      fixed="right"-->
-<!--                      label="操作"-->
-<!--                      width="120">-->
-<!--                      <template slot-scope="scope">-->
-<!--                        <el-button type="text" size="small">-->
-<!--                          追加评价-->
-<!--                        </el-button>-->
-<!--                        <el-button @click="handleDelete(scope.$index, tableData)"-->
-<!--                                   type="text" size="small">删除订单</el-button>-->
-<!--                      </template>-->
-<!--                    </el-table-column>-->
-<!--                  </el-table>-->
+                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                            style="width: 100%" @selection-change="selected">
+                    <el-table-column label="全选" type="selection" width="60">
+                    </el-table-column>
+                    <el-table-column label="订单号" width="220">
+                      <template slot-scope="scope">
+                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="总价(元)" width="100">
+                      <template slot-scope="scope">
+                        <span>{{scope.row.payment.toFixed(2)}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="订单状态" prop="status" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.status==='1'">待付款</span>
+                        <span v-if="scope.row.status==='2'">待发货</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="shippingName" label="收货人" width="80">
+                    </el-table-column>
+                    <el-table-column prop="address" label="收货地址" width="120">
+                    </el-table-column>
+                    <el-table-column label="创建时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.createTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="更新时间" width="180">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.updateTime | dateFormat('yyyy-MM-dd HH:mm:ss')  }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      fixed="right"
+                      label="操作"
+                      width="150">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small">
+                          <span v-if="scope.row.status==='1'">去付款</span>
+                          <span v-if="scope.row.status==='2'">去评价</span>
+                        </el-button>
+                        <el-button @click="handleDelete(scope.$index, tableData)"
+                                   type="text" size="small">删除订单</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-pagination
+                    style="text-align: center"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="pageSize"
+                    layout="prev, pager, next, jumper"
+                    :total="total">
+                  </el-pagination>
                 </el-card>
               </el-tab-pane>
             </el-tabs>
           </el-tab-pane>
           <el-tab-pane label="我的账单">我的账单</el-tab-pane>
-          <el-tab-pane label="我的收藏">我的收藏</el-tab-pane>
-          <el-tab-pane label="我的评论">我的评论</el-tab-pane>
+          <el-tab-pane label="我的收藏" name="collect">我的收藏</el-tab-pane>
+          <el-tab-pane label="我的评论" name="comment">我的评论</el-tab-pane>
           <el-tab-pane label="个人信息">个人信息</el-tab-pane>
           <el-tab-pane label="安全中心">安全中心</el-tab-pane>
           <el-tab-pane label="收货地址">收货地址</el-tab-pane>
         </el-tabs>
+        <el-dialog title="订单详情" :visible.sync="dialogFormVisible">
+          <el-table ref="multipleTable" :data="orderItemData" tooltip-effect="dark"
+                    style="width: 100%" @selection-change="selected">
+            <el-table-column label="全选" type="selection" width="60">
+            </el-table-column>
+            <el-table-column label="商品图片" width="150">
+              <template slot-scope="scope">
+                <div>
+                  <el-image :src="scope.row.image"></el-image>
+<!--                  <br/>-->
+<!--                  <p style="font-size: 16px;margin: 0;padding: 0">{{scope.row.productName}}</p>-->
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="productName" label="商品名称" width="200"></el-table-column>
+            <el-table-column prop="price" label="单价(元)" width="130">
+            </el-table-column>
+            <el-table-column prop="quantity" label="数量" width="100"></el-table-column>
+            <el-table-column prop="totalPrice" label="合计(元)" width="130"></el-table-column>
+            <el-table-column
+              fixed="right"
+              label="操作"
+              width="120">
+              <template slot-scope="scope">
+                <el-button @click="handleDelete(scope.$index, tableData)"
+                           type="text" size="small">去评价</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -338,8 +465,9 @@ export default {
       content: '',
       seen: false,
       input: '',
-      count: 0,
+      activeName: 'order',
       user: this.$route.params.user,
+      dialogFormVisible: false,
       addresses: [
         [
           { value: '北京' },
@@ -391,13 +519,52 @@ export default {
           { value: '钓鱼岛' }
         ]
       ],
-      tableData: this.$route.params.orderData
-      // orderData: []
+      orderData: this.$route.params.orderData,
+      tableData: this.$route.params.orderData.slice(0, 4),
+      orderItemData: [],
+      collectData: [],
+      total: this.$route.params.orderData.length,
+      currentPage: 1,
+      pageSize: 4
     }
   },
   methods: {
-    load () {
-      this.count += 2
+    findAnyThingsBy (tab, event) {
+      console.log(tab.name)
+      this.$axios.post('/findAnyThingsBy', {
+        uid: this.user.uid,
+        label: tab.label,
+        name: tab.name
+      }).then((res) => {
+        if (tab.name === 'collect') {
+          this.collectData = res.data
+          console.log(this.collectData)
+        } else if (tab.name === 'comment') {
+          this.commentData = res.data
+          console.log(res.data)
+        }
+      })
+    },
+    // 订单中根据条件查询
+    findOrderBy (tab, event) {
+      this.$axios.post('/findOrderByStatus', {
+        label: tab.label,
+        name: tab.name,
+        uid: this.user.uid
+      }).then((res) => {
+        this.orderData = res.data
+        this.tableData = res.data.slice(0, 4)
+        console.log(this.orderData)
+        this.total = res.data.length
+      })
+    },
+    viewOrderDetail (row) {
+      this.dialogFormVisible = true
+      this.$axios.post('/findOrderItemByOrderNo', {
+        orderNo: row.orderNo
+      }).then((res) => {
+        this.orderItemData = res.data
+      })
     },
     getAppear () {
       let address = document.getElementById('address')
@@ -430,6 +597,15 @@ export default {
         // this.moneyTotal += parseFloat(this.$refs.goodTotal[i].innerText)
         // console.log(this.$refs.goodTotal[i].innerText)
       }
+    },
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.tableData = this.orderData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    // 页面跳转
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.tableData = this.orderData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     },
     change (e) {
       this.$forceUpdate()
