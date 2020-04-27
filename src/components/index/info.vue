@@ -138,10 +138,10 @@
           <el-aside width="220px">
             <div class="header-right">
               <el-button type="danger" class="cart" icon="el-icon-shopping-cart-2">
-                <router-link to="/cart">购物车</router-link>
+                <router-link @click.native="this.goToCart()" to="">购物车</router-link>
               </el-button>
               <el-button plain class="order">
-                <router-link to="/order">我的订单</router-link>
+                <router-link @click.native="this.goToInfo()" to="">我的订单</router-link>
               </el-button>
             </div>
           </el-aside>
@@ -151,7 +151,7 @@
     <hr style="border: 1px solid red;padding: 0;margin: 0"/>
     <div class="info">
       <div class="center">
-        <el-tabs type="border-card" tab-position="left" style="width: 100%;height: 600px"
+        <el-tabs type="border-card" tab-position="left" style="width: 100%;height: 550px"
                  v-model="activeName" @tab-click="findAnyThingsBy">
           <el-tab-pane label="我的订单" name="order">
             <div style="float: right;">
@@ -171,7 +171,7 @@
               </div>
               <el-tab-pane label="全部订单" name="0">
                 <el-card shadow="never">
-                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                  <el-table ref="multipleTable" :data="orderData" tooltip-effect="dark"
                             style="width: 100%" @selection-change="selected">
                     <el-table-column label="全选" type="selection" width="60">
                     </el-table-column>
@@ -214,7 +214,7 @@
                           <span v-if="scope.row.status==='1'">去付款</span>
                           <span v-if="scope.row.status==='2'">去评价</span>
                         </el-button>
-                        <el-button @click="handleDelete(scope.$index, tableData)"
+                        <el-button @click="handleDelete(scope.$index, orderData)"
                                    type="text" size="small">删除订单</el-button>
                       </template>
                     </el-table-column>
@@ -232,7 +232,7 @@
               </el-tab-pane>
               <el-tab-pane label="待付款" name="1">
                 <el-card shadow="never">
-                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                  <el-table ref="multipleTable" :data="orderData" tooltip-effect="dark"
                             style="width: 100%" @selection-change="selected">
                     <el-table-column label="全选" type="selection" width="60">
                     </el-table-column>
@@ -275,7 +275,7 @@
                           <span v-if="scope.row.status==='1'">去付款</span>
                           <span v-if="scope.row.status==='2'">去评价</span>
                         </el-button>
-                        <el-button @click="handleDelete(scope.$index, tableData)"
+                        <el-button @click="handleDelete(scope.$index, orderData)"
                                    type="text" size="small">删除订单</el-button>
                       </template>
                     </el-table-column>
@@ -293,7 +293,7 @@
               </el-tab-pane>
               <el-tab-pane label="已付款" name="2">
                 <el-card shadow="never">
-                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                  <el-table ref="multipleTable" :data="orderData" tooltip-effect="dark"
                             style="width: 100%" @selection-change="selected">
                     <el-table-column label="全选" type="selection" width="60">
                     </el-table-column>
@@ -336,7 +336,7 @@
                           <span v-if="scope.row.status==='1'">去付款</span>
                           <span v-if="scope.row.status==='2'">去评价</span>
                         </el-button>
-                        <el-button @click="handleDelete(scope.$index, tableData)"
+                        <el-button @click="handleDelete(scope.$index, orderData)"
                                    type="text" size="small">删除订单</el-button>
                       </template>
                     </el-table-column>
@@ -354,7 +354,7 @@
               </el-tab-pane>
               <el-tab-pane label="待评价" name="3">
                 <el-card shadow="never">
-                  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark"
+                  <el-table ref="multipleTable" :data="orderData" tooltip-effect="dark"
                             style="width: 100%" @selection-change="selected">
                     <el-table-column label="全选" type="selection" width="60">
                     </el-table-column>
@@ -397,7 +397,7 @@
                           <span v-if="scope.row.status==='1'">去付款</span>
                           <span v-if="scope.row.status==='2'">去评价</span>
                         </el-button>
-                        <el-button @click="handleDelete(scope.$index, tableData)"
+                        <el-button @click="handleDelete(scope.$index, orderData)"
                                    type="text" size="small">删除订单</el-button>
                       </template>
                     </el-table-column>
@@ -415,8 +415,44 @@
               </el-tab-pane>
             </el-tabs>
           </el-tab-pane>
-          <el-tab-pane label="我的账单">我的账单</el-tab-pane>
-          <el-tab-pane label="我的收藏" name="collect">我的收藏</el-tab-pane>
+          <el-tab-pane label="我的收藏" name="collect">
+            <el-col style="margin: 0;border-radius: 0" :span="6" v-for="(info, index) in collectData"
+                    :key="info" :offset="index > 0 ? 1 : 0">
+              <el-card class="collect" shadow="never" style="width: 320px;height: 400px">
+                <a href="javascript:void(0);" style="font-size: 15px;color: #646464"
+                   @click="viewDetails(info)" :title="info.detail">
+                  <el-image :src="info.image"></el-image>
+                  <br>
+                  <i style="padding: 15px;margin: 15px">{{info.productName}}</i><br/>
+                  <span class="span"><i>({{info.subtitle}})</i></span></a>
+                <div style="padding: 20px;">
+                  <div class="bottom clearfix" style="margin-bottom: 20px">
+                    <span style="color: red;">
+                      <i style="font-size: 17px">￥{{info.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>
+                    </span>
+                    <s style="font-size: 14px">￥{{info.originalPrice.toFixed(2)}}</s>
+                  </div>
+                  <el-button type="info" style="margin: 0;border-radius: 0;width: 100px;height: 33px;font-size: 12px;color: #969696;background-color: #f5f5f5"
+                             plain>{{info.comments}}人评价</el-button>
+                  <el-button type="info" style="margin: 0;border-radius: 0;width: 100px;height: 33px;font-size: 12px;color: #969696;background-color: #f5f5f5"
+                             plain>{{info.collects}}人收藏</el-button>
+                </div>
+                <el-button type="danger" style="width: 120px;height: 40px;border-radius: 0"
+                           @click="addCart(info)">加入购物车</el-button>
+                <el-button type="danger" style="width: 110px;height: 40px;border-radius: 0"
+                           @click="addOrDeleteCollect(info)">取消收藏</el-button>
+              </el-card>
+            </el-col>
+              <el-pagination
+                style="text-align: center;position: absolute;bottom: 0;left: 33%"
+                @size-change="handleSizeChange1"
+                @current-change="handleCurrentChange1"
+                :current-page.sync="currentPage"
+                :page-size="pageSize"
+                layout="prev, pager, next, jumper"
+                :total="total">
+              </el-pagination>
+          </el-tab-pane>
           <el-tab-pane label="我的评论" name="comment">我的评论</el-tab-pane>
           <el-tab-pane label="个人信息">个人信息</el-tab-pane>
           <el-tab-pane label="安全中心">安全中心</el-tab-pane>
@@ -431,8 +467,6 @@
               <template slot-scope="scope">
                 <div>
                   <el-image :src="scope.row.image"></el-image>
-<!--                  <br/>-->
-<!--                  <p style="font-size: 16px;margin: 0;padding: 0">{{scope.row.productName}}</p>-->
                 </div>
               </template>
             </el-table-column>
@@ -519,8 +553,8 @@ export default {
           { value: '钓鱼岛' }
         ]
       ],
-      orderData: this.$route.params.orderData,
-      tableData: this.$route.params.orderData.slice(0, 4),
+      tableData: this.$route.params.orderData === null ? [] : this.$route.params.orderData,
+      orderData: this.$route.params.orderData.slice(0, 4) === null ? [] : this.$route.params.orderData,
       orderItemData: [],
       collectData: [],
       total: this.$route.params.orderData.length,
@@ -530,20 +564,35 @@ export default {
   },
   methods: {
     findAnyThingsBy (tab, event) {
-      console.log(tab.name)
-      this.$axios.post('/findAnyThingsBy', {
-        uid: this.user.uid,
-        label: tab.label,
-        name: tab.name
-      }).then((res) => {
-        if (tab.name === 'collect') {
-          this.collectData = res.data
-          console.log(this.collectData)
-        } else if (tab.name === 'comment') {
-          this.commentData = res.data
-          console.log(res.data)
-        }
-      })
+      if (tab.name === 'order') {
+        this.$axios.post('/findOrderInfo', {
+          uid: this.user.uid
+        }).then((res) => {
+          this.total = res.data.length
+          this.tableData = res.data
+          this.orderData = res.data.slice(0, 4)
+          this.currentPage = 1
+        })
+      } else {
+        this.$axios.post('/findAnyThingsBy', {
+          uid: this.user.uid,
+          label: tab.label,
+          name: tab.name
+        }).then((res) => {
+          if (tab.name === 'collect') {
+            this.total = res.data.length
+            this.tableData = res.data
+            this.collectData = res.data.slice(0, 4)
+            this.currentPage = 1
+          } else if (tab.name === 'comment') {
+            this.total = res.data.length
+            this.tableData = res.data
+            this.commentData = res.data
+            this.currentPage = 1
+          }
+        })
+      }
+      console.log(this.tableData)
     },
     // 订单中根据条件查询
     findOrderBy (tab, event) {
@@ -552,10 +601,33 @@ export default {
         name: tab.name,
         uid: this.user.uid
       }).then((res) => {
-        this.orderData = res.data
-        this.tableData = res.data.slice(0, 4)
-        console.log(this.orderData)
         this.total = res.data.length
+        this.tableData = res.data
+        this.orderData = res.data.slice(0, 4)
+        this.currentPage = 1
+      })
+    },
+    addCart (info) {
+      this.$axios.post('/addProductToCart', {
+        productId: info.productId,
+        uid: this.user.uid,
+        quantity: 1
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.message)
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
+    },
+    addOrDeleteCollect (info) {
+      this.$axios.post('/addOrDeleteCollectByProductId', {
+        productId: info.productId,
+        uid: this.user.uid
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.message)
+        }
       })
     },
     viewOrderDetail (row) {
@@ -584,28 +656,26 @@ export default {
       let result = this.$refs.result
       result.innerText = value
     },
-    selected (selection) {
-      this.multipleSelection = selection
-      this.moneyTotal = 0
-      // 此处不支持forEach循环，只能用原始方法了
-      for (let i = 0; i < selection.length; i++) {
-        //   判断返回的值是否是字符串
-        if (typeof selection[i].goodTotal === 'string') {
-          selection[i].goodTotal = parseFloat(selection[i].goodTotal)
-        }
-        this.moneyTotal += selection[i].goodTotal
-        // this.moneyTotal += parseFloat(this.$refs.goodTotal[i].innerText)
-        // console.log(this.$refs.goodTotal[i].innerText)
-      }
-    },
     handleSizeChange (val) {
       this.pageSize = val
-      this.tableData = this.orderData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      this.orderData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      // this.collectData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    handleSizeChange1 (val) {
+      this.pageSize = val
+      // this.orderData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      this.collectData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     },
     // 页面跳转
     handleCurrentChange (val) {
       this.currentPage = val
-      this.tableData = this.orderData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      this.orderData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      // this.collectData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    handleCurrentChange1 (val) {
+      this.currentPage = val
+      // this.orderData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+      this.collectData = this.tableData.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     },
     change (e) {
       this.$forceUpdate()
@@ -634,4 +704,17 @@ export default {
     padding 0 10px
     font-size 12px
     color #949494
+  .collect .span
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Firefox */
+    display: -moz-box;
+    -moz-line-clamp: 1;
+    -moz-box-orient: vertical;
+    /* Safari、Opera、Chrome */
+    display: -webkit-box;
+    /* 盒子垂直对齐 */
+    -webkit-box-orient: vertical;
+    /* 一行 */
+    -webkit-line-clamp: 1;
 </style>
