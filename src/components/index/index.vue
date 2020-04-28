@@ -400,7 +400,9 @@
                             {{ comments }}<i>条评论</i></a></span>
                         </i></span>
                       </p>
+<!--                      <p>现价：<i style="color: red; font-size: 17px">{{productDetail.discountPrice.toFixed(2)}}&nbsp;&nbsp;</i>-->
                       <p>现价：<i style="color: red; font-size: 17px">{{productDetail.discountPrice}}&nbsp;&nbsp;</i>
+<!--                      <span style="color: #99a9bf;font-size: 14px">原价：<s>{{productDetail.originalPrice.toFixed(2)}}</s></span>-->
                       <span style="color: #99a9bf;font-size: 14px">原价：<s>{{productDetail.originalPrice}}</s></span>
                       </p>
                       <p>配送至：<i>{{address}}</i></p>

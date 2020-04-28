@@ -217,6 +217,7 @@ export default {
         // this.moneyTotal += parseFloat(this.$refs.goodTotal[i].innerText)
         // console.log(this.$refs.goodTotal[i].innerText)
       }
+      this.moneyTotal = this.moneyTotal.toFixed(2)
     },
     cancel () {
       this.active -= 1
