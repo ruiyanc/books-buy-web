@@ -160,7 +160,7 @@
                 <el-input style="width: 260px" type="text" placeholder="商品名称/订单号/收货人姓名" @input="change()"></el-input>
                 <el-button style="border-radius: 0" @click="find(content)">搜索</el-button>
             </div>
-            <el-tabs @tab-click="findOrderBy">
+            <el-tabs @tab-click="findOrderBy" v-model="orderLabel">
               <div class="date">
                 <p>
                   下单时间：
@@ -179,7 +179,7 @@
                     </el-table-column>
                     <el-table-column label="订单号" width="220">
                       <template slot-scope="scope">
-                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                        <a href="javascript:void(0);" @click="viewOrderItem(scope.row)"><i>{{scope.row.orderNo}}</i></a>
                       </template>
                     </el-table-column>
                     <el-table-column label="总价(元)" width="100">
@@ -190,7 +190,7 @@
                     <el-table-column label="订单状态" prop="status" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.status==='1'">待付款</span>
-                        <span v-if="scope.row.status==='2'">待发货</span>
+                        <span v-if="scope.row.status==='2'">已付款</span>
                       </template>
                     </el-table-column>
                     <el-table-column prop="shippingName" label="收货人" width="80">
@@ -214,7 +214,7 @@
                       <template slot-scope="scope">
                         <el-button type="text" size="small">
                           <span v-if="scope.row.status==='1'" @click="payment(scope.row)">去付款</span>
-                          <span v-if="scope.row.status==='2'">去评价</span>
+                          <span v-if="scope.row.status==='2'" @click="viewOrderItem(scope.row)">详&nbsp;情</span>
                         </el-button>
                         <el-button @click="handleDelete(scope.$index, scope.row)"
                                    type="text" size="small">删除订单</el-button>
@@ -240,7 +240,7 @@
                     </el-table-column>
                     <el-table-column label="订单号" width="220">
                       <template slot-scope="scope">
-                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                        <a href="javascript:void(0);" @click="viewOrderItem(scope.row)"><i>{{scope.row.orderNo}}</i></a>
                       </template>
                     </el-table-column>
                     <el-table-column label="总价(元)" width="100">
@@ -251,7 +251,7 @@
                     <el-table-column label="订单状态" prop="status" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.status==='1'">待付款</span>
-                        <span v-if="scope.row.status==='2'">待发货</span>
+                        <span v-if="scope.row.status==='2'">已付款</span>
                       </template>
                     </el-table-column>
                     <el-table-column prop="shippingName" label="收货人" width="80">
@@ -275,7 +275,7 @@
                       <template slot-scope="scope">
                         <el-button type="text" size="small">
                           <span v-if="scope.row.status==='1'" @click="payment(scope.row)">去付款</span>
-                          <span v-if="scope.row.status==='2'">去评价</span>
+                          <span v-if="scope.row.status==='2'" @click="viewOrderItem(scope.row)">详&nbsp;情</span>
                         </el-button>
                       </template>
                     </el-table-column>
@@ -299,7 +299,7 @@
                     </el-table-column>
                     <el-table-column label="订单号" width="220">
                       <template slot-scope="scope">
-                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)">
+                        <a href="javascript:void(0);" @click="viewOrderItem(scope.row)">
                           <i>{{scope.row.orderNo}}</i></a>
                       </template>
                     </el-table-column>
@@ -311,7 +311,7 @@
                     <el-table-column label="订单状态" prop="status" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.status==='1'">待付款</span>
-                        <span v-if="scope.row.status==='2'">待发货</span>
+                        <span v-if="scope.row.status==='2'">已付款</span>
                       </template>
                     </el-table-column>
                     <el-table-column prop="shippingName" label="收货人" width="80">
@@ -335,7 +335,7 @@
                       <template slot-scope="scope">
                         <el-button type="text" size="small">
                           <span v-if="scope.row.status==='1'" @click="payment(scope.row)">去付款</span>
-                          <span v-if="scope.row.status==='2'">去评价</span>
+                          <span v-if="scope.row.status==='2'" @click="viewOrderItem(scope.row)">详&nbsp;情</span>
                         </el-button>
                       </template>
                     </el-table-column>
@@ -351,7 +351,7 @@
                   </el-pagination>
                 </el-card>
               </el-tab-pane>
-              <el-tab-pane label="待评价" name="3">
+              <el-tab-pane label="已完成" name="3">
                 <el-card shadow="never">
                   <el-table ref="multipleTable" :data="orderData" tooltip-effect="dark"
                             style="width: 100%" @selection-change="selected">
@@ -359,7 +359,7 @@
                     </el-table-column>
                     <el-table-column label="订单号" width="220">
                       <template slot-scope="scope">
-                        <a href="javascript:void(0);" @click="viewOrderDetail(scope.row)"><i>{{scope.row.orderNo}}</i></a>
+                        <a href="javascript:void(0);" @click="viewOrderItem(scope.row)"><i>{{scope.row.orderNo}}</i></a>
                       </template>
                     </el-table-column>
                     <el-table-column label="总价(元)" width="100">
@@ -370,7 +370,7 @@
                     <el-table-column label="订单状态" prop="status" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.status==='1'">待付款</span>
-                        <span v-if="scope.row.status==='2'">待发货</span>
+                        <span v-if="scope.row.status==='2'">已付款</span>
                       </template>
                     </el-table-column>
                     <el-table-column prop="shippingName" label="收货人" width="80">
@@ -394,7 +394,7 @@
                       <template slot-scope="scope">
                         <el-button type="text" size="small">
                           <span v-if="scope.row.status==='1'" @click="payment(scope.row)">去付款</span>
-                          <span v-if="scope.row.status==='2'">去评价</span>
+                          <span v-if="scope.row.status==='2'" @click="viewOrderItem(scope.row)">详&nbsp;情</span>
                         </el-button>
                       </template>
                     </el-table-column>
@@ -527,6 +527,11 @@
               fixed="right"
               label="操作"
               width="120">
+              <template slot-scope="scope">
+                <el-button type="text" size="small">
+                  <span @click="reviewProduct(scope.row)">评价商品</span>
+                </el-button>
+              </template>
             </el-table-column>
           </el-table>
         </el-dialog>
@@ -552,6 +557,23 @@
             </el-card>
           </div>
         </el-dialog>
+        <el-dialog title="商品评价" :visible.sync="dialogFormVisible2">
+          <div class="center p">
+            <el-card shadow="never">
+              <el-form :model="productComment" ref="productReview" label-width="120px" style="margin: 20px">
+                <el-form-item label="评价星级">
+<!--                  <el-input v-model="productComment.score" autocomplete="off" style="width: 200px;" ></el-input>-->
+                  <el-rate text-color="#ff9900" v-model="productComment.score" :colors="colors"></el-rate>
+                </el-form-item>
+                <el-form-item label="评价内容">
+                  <el-input v-model="productComment.commentInfo" autocomplete="off" style="width: 200px;"></el-input>
+                </el-form-item>
+                <el-button style="margin-left: 50px;" type="danger" @click="dialogFormVisible2=false">取 消</el-button>
+                <el-button style="margin-left: 130px;" plain type="primary" @click="commentSubmit('productComment')">确 定</el-button>
+              </el-form>
+            </el-card>
+          </div>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -566,12 +588,14 @@ export default {
       seen: false,
       see: false,
       input: '',
-      avgRate: null,
+      rate: null,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
       activeName: 'order',
+      orderLabel: '0',
       user: this.$route.params.user,
       dialogFormVisible: false,
       dialogFormVisible1: false,
+      dialogFormVisible2: false,
       addresses: [
         [
           { value: '北京' },
@@ -626,6 +650,11 @@ export default {
       tableData: this.$route.params.orderData === null ? [] : this.$route.params.orderData,
       orderData: this.$route.params.orderData.slice(0, 4) === null ? [] : this.$route.params.orderData.slice(0, 4),
       productDetail: {},
+      productComment: {
+        commentInfo: '',
+        score: null
+      },
+      orderItem: {},
       orderItemData: [],
       collectData: [],
       commentData: [],
@@ -635,16 +664,20 @@ export default {
     }
   },
   methods: {
+    // 刷新订单
+    flushOrder () {
+      this.$axios.post('/findOrderInfo', {
+        uid: this.user.uid
+      }).then((res) => {
+        this.total = res.data.length
+        this.tableData = res.data
+        this.orderData = res.data.slice(0, 4)
+        this.currentPage = 1
+      })
+    },
     findAnyThingsBy (tab, event) {
       if (tab.name === 'order') {
-        this.$axios.post('/findOrderInfo', {
-          uid: this.user.uid
-        }).then((res) => {
-          this.total = res.data.length
-          this.tableData = res.data
-          this.orderData = res.data.slice(0, 4)
-          this.currentPage = 1
-        })
+        this.flushOrder()
       } else {
         this.$axios.post('/findAnyThingsBy', {
           uid: this.user.uid,
@@ -677,12 +710,15 @@ export default {
         }).then((res) => {
           if (res.data.code === 200) {
             this.$message({ type: 'success', message: '付款成功!' })
+            this.flushOrder()
+            this.orderLabel = '0'
           }
         })
       })
     },
     // 删除订单
     handleDelete (index, row) {
+      console.log(row)
       this.$confirm('确定删除该订单？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -692,12 +728,34 @@ export default {
           order: row
         }).then((res) => {
           if (res.data.code === 200) {
-            this.orderData.splice(index, 1)
+            // this.orderData.splice(index, 1)
             this.$message({ type: 'success', message: '删除订单成功!' })
+            this.flushOrder()
           }
         })
       }).catch(() => {
         this.$message({ type: 'info', message: '已取消删除' })
+      })
+    },
+    reviewProduct (row) {
+      console.log(row)
+      this.orderItem = row
+      this.dialogFormVisible2 = true
+    },
+    commentSubmit () {
+      console.log(this.productComment)
+      this.$axios.post('/addProductComment', {
+        orderItem: this.orderItem,
+        productComment: this.productComment
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.message)
+          this.dialogFormVisible2 = false
+          this.dialogFormVisible = false
+        } else {
+          this.$message.info(res.data.message)
+          this.dialogFormVisible2 = false
+        }
       })
     },
     // 订单中根据条件查询
@@ -770,7 +828,7 @@ export default {
         }
       })
     },
-    viewOrderDetail (row) {
+    viewOrderItem (row) {
       this.dialogFormVisible = true
       this.$axios.post('/findOrderItemByOrderNo', {
         orderNo: row.orderNo

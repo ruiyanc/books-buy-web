@@ -515,6 +515,7 @@ export default {
       rate: null,
       activeName: '0',
       user: this.$route.params.user == null ? null : this.$route.params.user,
+      time: '',
       infoData: [],
       commentData: [],
       labelData: [],
