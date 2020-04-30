@@ -427,37 +427,35 @@
           <el-aside width="220px">
             <div class="main-right">
               <el-tabs>
-                <el-tab-pane label="图书畅销榜">
-                  <el-card class="box-card">
-                    <!--                    <div slot="header" class="clearfix">-->
-                    <!--                      <span><el-link>图书畅销榜</el-link></span>-->
-                    <!--                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                    <!--                    </div>-->
-                    <ul>
-                      <li v-for="(data, index) in dataTops" :key="data" class="text item">
-                        <!--                  {{'列表内容 ' + o }}-->
-                        <!--                  <el-image :src="data."></el-image>-->
-                        <i>{{index + 1}}</i>
-                        <i>{{data.title}}</i>
-                        <p>{{data.info}}</p>
-                        <hr style="margin: 0;color: #99a9bf"/>
-                      </li>
-                    </ul>
+                <el-tab-pane label="全部商品">
+                  <el-card class="box-card" style="height: 560px">
+                      <ul class="infinite-list">
+                        <li v-for="info in dataAll" :key="info" class="infinite-list-item">
+                          <i>{{info.id}}</i>
+                          <i><a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                            {{info.name}}</a></i>
+                          <div class="table"><a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a></div>
+                        </li>
+                      </ul>
+                    <el-pagination
+                      small
+                      @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange"
+                      :current-page.sync="currentPage"
+                      :page-size="pageSize"
+                      layout="prev, pager, next, jumper"
+                      :total="total">
+                    </el-pagination>
                   </el-card>
                 </el-tab-pane>
-                <el-tab-pane label="童书新品榜">
+                <el-tab-pane label="图书畅销榜">
                   <el-card class="box-card">
-                    <!--                    <div slot="header" class="clearfix">-->
-                    <!--                      <span><el-link>图书畅销榜</el-link></span>-->
-                    <!--                  <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                    <!--                    </div>-->
                     <ul>
-                      <li v-for="(data, index) in dataNews" :key="data" class="text item">
-                        <!--                  {{'列表内容 ' + o }}-->
-                        <!--                  <el-image :src="data."></el-image>-->
+                      <li v-for="(info, index) in dataTops" :key="info" class="text item">
                         <i>{{index + 1}}</i>
-                        <i>{{data.title}}</i>
-                        <p>{{data.info}}</p>
+                        <i><a href="javascript:void(0);" style="font-size: 15px;color: #646464" @click="viewDetails(info)">
+                          {{info.name}}</a></i>
+                        <div class="table"><a href="javascript:void(0);" :title="info.detail" @click="viewDetails(info)">{{info.subtitle}}</a></div>
                         <hr style="margin: 0;color: #99a9bf"/>
                       </li>
                     </ul>
@@ -516,6 +514,7 @@ export default {
       activeName: '0',
       user: this.$route.params.user == null ? null : this.$route.params.user,
       time: '',
+      total: 0,
       infoData: [],
       commentData: [],
       labelData: [],
@@ -530,22 +529,11 @@ export default {
       lis: ['童书', '中小学', '外语', '考试', '小说', '文学', '青春文学',
         '励志', '管理', '历史', '亲子', '全部分类'],
       productDetail: {},
-      dataTops: [
-        { title: '爱与和平', info: '讲述.....' },
-        { title: '西游记', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' },
-        { title: '水浒传', info: '讲述.....' }
-      ],
-      dataNews: [
-        { title: '天才在左,疯子在右', info: '讲述疯子....' },
-        { title: '童话镇', info: '讲述童话....' }
-      ],
+      dataTops: [],
+      dataAllS: [],
+      currentPage: 1,
+      pageSize: 10,
+      dataAll: [],
       images: [
         { imgUrl: require('@/assets/img/center-1.jpg') },
         { imgUrl: require('@/assets/img/center-2.jpg') },
@@ -609,6 +597,29 @@ export default {
     }
   },
   methods: {
+    initProductByOrderItem () {
+      this.$axios.get('/findProductByOrderItem')
+        .then((res) => {
+          this.dataTops = res.data.slice(0, 10)
+        })
+    },
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.dataAll = this.dataAllS.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.dataAll = this.dataAllS.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    initProductAll () {
+      // let i = this.page
+      this.$axios.get('/initProductAll')
+        .then((res) => {
+          this.dataAllS = res.data
+          this.total = res.data.length
+          this.dataAll = this.dataAllS.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+        })
+    },
     // 跳转到个人信息
     goToInfo () {
       this.$axios.post('/findOrderInfo', {
@@ -682,14 +693,14 @@ export default {
         }
       })
     },
-    // 按条件查询商品8条
+    // 按条件查询商品12条
     findProductBy (tab, event) {
       this.$axios.post('/findProductByLabel', {
         label: tab.label,
         name: tab.name
       }).then((res) => {
         if (res.data.code === 200) {
-          this.labelData = res.data.labelData.slice(0, 8)
+          this.labelData = res.data.labelData.slice(0, 12)
         }
       })
     },
@@ -748,7 +759,6 @@ export default {
     initFindAllProduct () {
       this.$axios.get('/findAllProductSpice')
         .then((res) => {
-          console.log(res.data)
           this.infoData = res.data.slice(0, 12)
         })
       this.$axios.post('/findProductByLabel', {
@@ -803,6 +813,8 @@ export default {
       this.timer()
     }
     this.initFindAllProduct()
+    this.initProductAll()
+    this.initProductByOrderItem()
   }
   // mounted () {
   //   this.time = setInterval(this.timer, 10000)
