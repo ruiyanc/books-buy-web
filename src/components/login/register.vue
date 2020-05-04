@@ -130,7 +130,10 @@ export default {
           }).then(response => {
             console.log(response)
             if (response.data.code === 200) {
+              this.$message.success(response.data.message)
               this.$router.replace({ path: '/login' })
+            } else {
+              this.$message.info(response.data.message)
             }
           })
         } else {
